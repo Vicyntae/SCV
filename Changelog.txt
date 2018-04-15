@@ -1,0 +1,38 @@
+Version 0.3: Streamline
+-Rewrote monitor: Everything now done through reference aliases
+
+Version 0.21
+- Fixed fatigue growth perk zeroing out fatigue by accident
+- Added new debug spells focusing on non-lethal vore
+- Fixed profile generation decreasing base capacity, sometimes below zero
+- Adjusted messages to use player thoughts system in SCL
+- Fixed chance function outputing wrong values
+Version 0.2
+- Edited race database for values (200 for a rabbit? Seriously?)
+- Removed several notes and notices which were unnecessary, added some for important info
+- Added difficulty settings
+- Added perk "Iron Core"/"Nourishing Core"
+- Fixed Move-Prey function sending the player into a teammates stomach unexpectedly
+- Added option to set SCV Wheel Menu to its own Action Key
+- Added actor information notifications whenever the wheelmenu is opened
+- Added more info to prey viewer in MCM and WheelMenu
+- Added Global strugglerate modifier and adjuster in MCM
+- Removed "Make Player Predator" Option: Player now uses same feature as everyone else
+- Added License File
+- Increased damage to pred and prey, and adjusted damage bonus formula
+- Added Versioning
+- Created Pred and Prey Menus (Opens instead of the standard menu when applicable)
+- Added space for talking prey (not ready yet, but I know how it will happen)
+- Expanded prey menu to include ability to vomit prey.
+- Adjusted inital prey level calculations for Actors using the Make Predator function (i.e. the player)
+- Removed debug menu, moved all 3 of the functions into settings. Also hid debug toggle
+- Added new debug spells: Force Random Vore, Force Specific Vore, Apply Frenzy
+- Tweaked Follow spell so that it works (somewhat): removal still takes too long.
+- Removed default animation for NPCxNot-NPC interactions (caused NPC to bug out when used, actors will just disappear instead).
+- Added sliders in MCM under debug tweaking damage formulas for struggling
+- Edited stat distribution formulas: Increased bonuses to STBase if pred, predator perks only given to preds, preds less likely to recieve some prey perks, or else not get them at all.
+- Changed follow system to use aliases
+- Added actor records
+- Created new perk system internally, will now hide perks that can't be taken (irrelevant right now, all perks can be taken).
+
+

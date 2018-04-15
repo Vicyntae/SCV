@@ -1,8 +1,8 @@
 game: skyrim
 imports:
-    - E:\Documents\Work\SCV 0.3\Data\Scripts\Source\
-    - E:\Documents\Work\SCL 0.4\Data\Scripts\Source\
-    - E:\Documents\Work\SCA 0.1\Data\Scripts\Source\
+    - E:\Documents\Projects\SCV\Data\Scripts\Source\
+    - E:\Documents\Projects\SCL\Data\Scripts\Source\
+    - E:\Documents\Projects\SCA\Data\Scripts\Source\
     - E:\Games\Mod Organizer\mods\JContainers\scripts\source
     - E:\Games\Mod Organizer\mods\RaceMenu Unpacked\scripts\source
     - E:\Games\Mod Organizer\mods\SexLab Inflation Framework\Scripts\Source\SexLab Inflation Framework
@@ -15,5 +15,5 @@ imports:
     - C:\Games\Steam\SteamApps\common\Skyrim\Data\Scripts\Source\Dawnguard
     - C:\Games\Steam\SteamApps\common\Skyrim\Data\Scripts\Source\Dragonborn
     - C:\Games\Steam\SteamApps\common\Skyrim\Data\Scripts\Source\Hearthfire
-output: E:\Documents\Work\SCV 0.3\Data\Scripts\
+output: E:\Documents\Projects\SCV\Data\Scripts\
 optimize: true

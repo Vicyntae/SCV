@@ -1,0 +1,20 @@
+Vital
+- New animation manager
+- [Testing] New follow effect
+- Better AI script
+Ancillary
+- New types
+- Animations and sounds
+- Integration with other mods
+	-
+- Story Quests and Missions
+- [In Development] Stat bonuses for eating
+- 
+
+Cool
+- Struggle minigame?
+- UI mod to add info above actors heads in combat (see https://www.nexusmods.com/skyrim/mods/58728/?)
+- Struggling belly models 
+- Look at belly (use head tracking)
+- Walking animations
+- Impliment pred types (Protector, Prison)
