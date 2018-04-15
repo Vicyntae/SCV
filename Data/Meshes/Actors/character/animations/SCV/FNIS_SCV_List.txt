@@ -1,0 +1,3 @@
+b -a,h,B1.2,Tn SCV_GrabEvent01 SCV_GrabAnim.hkx
+b -a,h,B1.2,Tn SCV_GrabSuccessEvent01 SCV_GrabSuccessAnim.hkx
+b -a,h,B1.2,Tn SCV_GrabFailEvent01 SCV_GrabFailAnim.hkx
