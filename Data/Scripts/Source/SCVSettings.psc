@@ -141,6 +141,8 @@ Keyword Property SCV_DamageKeyword Auto
 
 Spell Property SCV_StruggleDispel Auto
 Spell Property SCV_PredMarker Auto
+Spell Property SCV_OVPredMarker Auto
+Spell Property SCV_AVPredMarker Auto
 Spell Property SCV_OVFrenzySelfSpell01 Auto
 
 MagicEffect Property SCV_FrenzyLevel2 Auto

@@ -19,7 +19,7 @@ String[] PredTypes
 
 Float Property PredAggression
   Float Function Get();Rethink this, maybe a better way (base off vore level?)
-    Float Value = SCVLib.getGlutValue(MyActor) + (SCVLib.getOVLevelTotal(MyActor) / 4) + (SCVLib.getAVLevelTotal(MyActor) / 4)
+    Float Value = SCVLib.getGlutValue(MyActor) + (SCVLib.getOVLevelTotal(MyActor) / 2) + (SCVLib.getAVLevelTotal(MyActor) / 2)
     ;Debug.Notification("Pred Aggression = " + Value)
     Return Value
   EndFunction
@@ -61,7 +61,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
     i += 1
   EndIf
 
-  RegisterForSingleUpdate(5)
+  RegisterForSingleUpdate(2)
 EndEvent
 
 Event OnUpdate()
@@ -90,7 +90,7 @@ Event OnUpdate()
       VoreSpell.Cast(MyActor, Prey)
     EndIf
   EndIf
-  RegisterForSingleUpdate(5)
+  RegisterForSingleUpdate(2)
 EndEvent
 
 Spell Function getVoreSpell(Int aiIndex, Bool abLethal)

@@ -10,108 +10,109 @@ SCVSettings Property SCVSet Auto
 Int Property ActorDataVersion = 1 Auto
 Function checkSCVData(Actor akTarget, Int aiTargetData)
   {Checks if data necessary for SCV has been added to ActorData}
-  If !JMap.hasKey(aiTargetData, "SCV_DataVersion")
-    If akTarget == PlayerRef
+  Int StoredVersion = JMap.getInt(aiTargetData, "SCV_DataVersion")
+  If ActorDataVersion >= 1 && StoredVersion < 1
+    If JMap.getInt(aiTargetData, "SCLBasicProfile") > 0
       JMap.setInt(aiTargetData, "SCV_IsOVPred", 0)
       JMap.setInt(aiTargetData, "SCV_OVLevel", 1)
       JMap.setInt(aiTargetData, "SCV_AVLevel", 1)
       JMap.setInt(aiTargetData, "SCV_Allure", 0)
 
       JMap.setInt(aiTargetData, "SCV_ResLevel", 10)
-      JMap.setInt(aiTargetData, "SCV_DataVersion", ActorDataVersion)
-      Return
-    EndIf
-    Bool bPred = False
-    Bool bOVPred = False
-    If SCVSet.OVPredPercent
-      Int PredChance = Utility.RandomInt()
-      If PredChance <= SCVSet.OVPredPercent
-        JMap.setInt(aiTargetData, "SCV_IsOVPred", 1)
-        bOVPred = True
-        bPred = True
-      EndIf
-    EndIf
-    Bool bAVPred = False
-    If SCVSet.AVPredPercent
-      Int PredChance = Utility.RandomInt()
-      If PredChance <= SCVSet.AVPredPercent
-        JMap.setInt(aiTargetData, "SCV_IsAVPred", 1)
-        bAVPred = True
-        bPred = True
-      EndIf
-    endIf
-    Float[] Chances = genNormalDist()
-    Float Chance1 = Chances[0]
-    Float Chance2 = Chances[1]
-    ;Changes range from +-1 to +- 30
-    Chance1 = Math.abs(Chance1)
-    Chance2 = Math.abs(Chance2)
-
-    Chance1 *= 30
-    Chance2 *= 30
-    ;Shift mean to difficulty
-    Chance1 += getPredDifficulty()
-    Chance2 += getPreyDifficulty()
-
-    clampFlt(Chance1, 1, 100)
-    clampFlt(Chance2, 1, 100)
-
-    If bPred
-      If bOVPred
-        JMap.setInt(aiTargetData, "SCV_OVLevel", Math.Ceiling(Chance1))
-        JMap.setFlt(aiTargetData, "STBase", JMap.getFlt(aiTargetData, "STBase") + (Math.pow(2, Chance1 / 10)))
-        JMap.setFlt(aiTargetData, "STDigestionRate", JMap.getFlt(aiTargetData, "STDigestionRate") + (Math.pow(1.3, Chance1 / 11) - 1))
-        JMap.setInt(aiTargetData, "SCLGluttony", JMap.getInt(aiTargetData, "SCLGluttony") + Math.Ceiling(Math.Pow(2, Chance1 / 20)))
-      EndIf
-      If bAVPred
-        JMap.setInt(aiTargetData, "SCV_AVLevel", Math.Ceiling((Chance1 + Chance2) / 2))
-        If SCVSet.SCA_Initialized
-          takeUpPerks(akTarget, "SCA_BasementStorage", 3)
-          ;What do we need to add here?
-        Else  ;Give bonus to stomach stats, since prey will be added to stomach array
-          JMap.setFlt(aiTargetData, "STBase", JMap.getFlt(aiTargetData, "STBase") + (Math.pow(2, Chance1 / 10)))
-          JMap.setFlt(aiTargetData, "STDigestionRate", JMap.getFlt(aiTargetData, "STDigestionRate") + (Math.pow(1.3, Chance1 / 11) - 1))
+    Else
+      Bool bPred = False
+      Bool bOVPred = False
+      If SCVSet.OVPredPercent
+        Int PredChance = Utility.RandomInt()
+        If PredChance <= SCVSet.OVPredPercent
+          JMap.setInt(aiTargetData, "SCV_IsOVPred", 1)
+          bOVPred = True
+          bPred = True
         EndIf
       EndIf
+      Bool bAVPred = False
+      If SCVSet.AVPredPercent
+        Int PredChance = Utility.RandomInt()
+        If PredChance <= SCVSet.AVPredPercent
+          JMap.setInt(aiTargetData, "SCV_IsAVPred", 1)
+          bAVPred = True
+          bPred = True
+        EndIf
+      endIf
+      Float[] Chances = genNormalDist()
+      Float Chance1 = Chances[0]
+      Float Chance2 = Chances[1]
+      ;Changes range from +-1 to +- 30
+      Chance1 = Math.abs(Chance1)
+      Chance2 = Math.abs(Chance2)
 
-      Int PerkList = Utility.RandomInt(1000000000000, 1999999999999)
-      If PerkList != 1000000000000
-        initializePerk(akTarget, "SCV_IntenseHunger", StringUtil.Substring(PerkList, 1, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_MetalMuncher", StringUtil.Substring(PerkList, 2, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_ExpiredEpicurian", StringUtil.Substring(PerkList, 3, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_FollowerofNamira", StringUtil.Substring(PerkList, 4, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_DaedraDieter", StringUtil.Substring(PerkList, 5, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_DragonDevourer", StringUtil.Substring(PerkList, 6, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_Constriction", StringUtil.Substring(PerkList, 7, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_SpiritSwallower", StringUtil.Substring(PerkList, 8, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_RemoveLimits", StringUtil.Substring(PerkList, 9, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_Nourish", StringUtil.Substring(PerkList, 10, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_Acid", StringUtil.Substring(PerkList, 11, 1) as Int, Chance1)
-        initializePerk(akTarget, "SCV_Stalker", StringUtil.Substring(PerkList, 12, 1) as Int, Chance1)
+      Chance1 *= 30
+      Chance2 *= 30
+      ;Shift mean to difficulty
+      Chance1 += getPredDifficulty()
+      Chance2 += getPreyDifficulty()
+
+      clampFlt(Chance1, 1, 100)
+      clampFlt(Chance2, 1, 100)
+
+      If bPred
+        If bOVPred
+          JMap.setInt(aiTargetData, "SCV_OVLevel", Math.Ceiling(Chance1))
+          JMap.setFlt(aiTargetData, "STBase", JMap.getFlt(aiTargetData, "STBase") + (Math.pow(2, Chance1 / 10)))
+          JMap.setFlt(aiTargetData, "STDigestionRate", JMap.getFlt(aiTargetData, "STDigestionRate") + (Math.pow(1.3, Chance1 / 11) - 1))
+          JMap.setInt(aiTargetData, "SCLGluttony", JMap.getInt(aiTargetData, "SCLGluttony") + Math.Ceiling(Math.Pow(2, Chance1 / 20)))
+        EndIf
+        If bAVPred
+          JMap.setInt(aiTargetData, "SCV_AVLevel", Math.Ceiling((Chance1 + Chance2) / 2))
+          If SCVSet.SCA_Initialized
+            takeUpPerks(akTarget, "SCA_BasementStorage", 3)
+            ;What do we need to add here?
+          Else  ;Give bonus to stomach stats, since prey will be added to stomach array
+            JMap.setFlt(aiTargetData, "STBase", JMap.getFlt(aiTargetData, "STBase") + (Math.pow(2, Chance1 / 10)))
+            JMap.setFlt(aiTargetData, "STDigestionRate", JMap.getFlt(aiTargetData, "STDigestionRate") + (Math.pow(1.3, Chance1 / 11) - 1))
+          EndIf
+        EndIf
+
+        Int PerkList = Utility.RandomInt(1000000000000, 1999999999999)
+        If PerkList != 1000000000000
+          initializePerk(akTarget, "SCV_IntenseHunger", StringUtil.Substring(PerkList, 1, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_MetalMuncher", StringUtil.Substring(PerkList, 2, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_ExpiredEpicurian", StringUtil.Substring(PerkList, 3, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_FollowerofNamira", StringUtil.Substring(PerkList, 4, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_DaedraDieter", StringUtil.Substring(PerkList, 5, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_DragonDevourer", StringUtil.Substring(PerkList, 6, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_Constriction", StringUtil.Substring(PerkList, 7, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_SpiritSwallower", StringUtil.Substring(PerkList, 8, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_RemoveLimits", StringUtil.Substring(PerkList, 9, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_Nourish", StringUtil.Substring(PerkList, 10, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_Acid", StringUtil.Substring(PerkList, 11, 1) as Int, Chance1)
+          initializePerk(akTarget, "SCV_Stalker", StringUtil.Substring(PerkList, 12, 1) as Int, Chance1)
+        EndIf
+        takeUpPerks(akTarget, "SCV_FollowerofNamira", 1)
       EndIf
-      takeUpPerks(akTarget, "SCV_FollowerofNamira", 1)
-    EndIf
 
-    JMap.setInt(aiTargetData, "SCV_ResLevel", Math.Ceiling(Chance2))
-    Int PerkList = Utility.RandomInt(100000, 199999)
-    If PerkList != 100000
-      initializePerk(akTarget, "SCV_CorneredRat", StringUtil.Substring(PerkList, 1, 1) as Int, Chance2)
-      initializePerk(akTarget, "SCV_StrokeOfLuck", StringUtil.Substring(PerkList, 2, 1) as Int, Chance2)
-      initializePerk(akTarget, "SCV_ExpectPushback", StringUtil.Substring(PerkList, 3, 1) as Int, Chance2)
-      initializePerk(akTarget, "SCV_FillingMeal", StringUtil.Substring(PerkList, 4, 1) as Int, Chance2)
-      initializePerk(akTarget, "SCV_ThrillingStruggle", StringUtil.Substring(PerkList, 5, 1) as Int, Chance2)
+      JMap.setInt(aiTargetData, "SCV_ResLevel", Math.Ceiling(Chance2))
+      Int PerkList = Utility.RandomInt(100000, 199999)
+      If PerkList != 100000
+        initializePerk(akTarget, "SCV_CorneredRat", StringUtil.Substring(PerkList, 1, 1) as Int, Chance2)
+        initializePerk(akTarget, "SCV_StrokeOfLuck", StringUtil.Substring(PerkList, 2, 1) as Int, Chance2)
+        initializePerk(akTarget, "SCV_ExpectPushback", StringUtil.Substring(PerkList, 3, 1) as Int, Chance2)
+        initializePerk(akTarget, "SCV_FillingMeal", StringUtil.Substring(PerkList, 4, 1) as Int, Chance2)
+        initializePerk(akTarget, "SCV_ThrillingStruggle", StringUtil.Substring(PerkList, 5, 1) as Int, Chance2)
+      EndIf
+      Int B = Utility.RandomInt(0, 10)
+      Int AllureLevel
+      If B <= 2
+        AllureLevel = -1
+      ElseIf B >= 9
+        AllureLevel = 1
+      Else
+        AllureLevel = 0
+      EndIf
+      JMap.setInt(aiTargetData, "SCV_Allure", AllureLevel)
     EndIf
-    Int B = Utility.RandomInt(0, 10)
-    Int AllureLevel
-    If B <= 2
-      AllureLevel = -1
-    ElseIf B >= 9
-      AllureLevel = 1
-    Else
-      AllureLevel = 0
-    EndIf
-    JMap.setInt(aiTargetData, "SCV_Allure", AllureLevel)
-  ;ElseIf JMap.getInt(aiTargetData, SCV_DataVersion) < 2
+  ;ElseIf ActorDataVersion >= 2 && StoredVersion < 2
+  ;Stuff here
   EndIf
   checkPredAbilities(akTarget)
   JMap.setInt(aiTargetData, "SCV_DataVersion", ActorDataVersion)
@@ -378,19 +379,25 @@ Bool Function checkPredAbilities(Actor akTarget, Int aiTargetData = 0)
   If isOVPred(akTarget, TargetData)
     akTarget.AddSpell(SCVSet.SCV_SwallowLethal, False)
     akTarget.AddSpell(SCVSet.SCV_SwallowNonLethal, False)
+    akTarget.AddSpell(SCVSet.SCV_OVPredMarker)
     isPred = True
   Else
     akTarget.RemoveSpell(SCVSet.SCV_SwallowLethal)
     akTarget.RemoveSpell(SCVSet.SCV_SwallowNonLethal)
+    akTarget.removespell(SCVSet.SCV_OVPredMarker)
+
   EndIf
 
   If isAVPred(akTarget, TargetData)
     akTarget.AddSpell(SCVSet.SCV_TakeInLethal, False)
     akTarget.AddSpell(SCVSet.SCV_TakeInNonLethal, False)
+    akTarget.AddSpell(SCVSet.SCV_AVPredMarker)
+
     isPred = True
   Else
     akTarget.RemoveSpell(SCVSet.SCV_TakeInLethal)
     akTarget.RemoveSpell(SCVSet.SCV_TakeInNonLethal)
+    akTarget.removespell(SCVSet.SCV_OVPredMarker)
   EndIf
 
   ;/If isPVPred(akTarget, TargetData)

@@ -61,7 +61,9 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 
   Severity = Setting_InitialSeverity
   checkSeverity()
-  akTarget.AddSpell(Setting_EquipAbility, False)
+  If !akTarget.HasSpell(Setting_EquipAbility)
+    akTarget.AddSpell(Setting_EquipAbility, False)
+  EndIf
   RegisterForSingleUpdate(Setting_UpdateRate)
 EndEvent
 
@@ -107,7 +109,9 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
   If MyActor.HasMagicEffect(SCL_AIFindFoodEffect01b) || MyActor.HasMagicEffect(SCL_AIFindFoodEffect01a)
     SCL_AIFindFoodSpellStop01.Cast(MyActor)
   EndIf
-  akTarget.RemoveSpell(Setting_EquipAbility)
+  If akTarget.HasSpell(Setting_EquipAbility)
+    akTarget.RemoveSpell(Setting_EquipAbility)
+  EndIf
 EndEvent
 
 
