@@ -1,10 +1,5 @@
 ScriptName SCVPlayerMonitor Extends SCVMonitor
 
-Event OnInit()
-  Notice("Beginning Player monitor setup")
-  Setup()
-EndEvent
-
 Function Setup()
   Parent.Setup()
   RegisterForModEvent("SCLActionKeyChange", "OnActionKeyChange")
