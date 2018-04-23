@@ -216,6 +216,8 @@ Formlist Property SCV_InVoreActionList Auto ; Prevents any vore actions if they 
 
 ReferenceAlias Property SCV_FollowPred Auto
 
+ObjectReference Property SCV_TransferChest Auto
+
 SCVInsertPreyThreadManager Property InsertPreyThreadManager Auto
 SCVProcessPreyThreadManager Property ProcessPreyThreadManager Auto
 

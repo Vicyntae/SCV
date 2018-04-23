@@ -133,16 +133,20 @@ Event OnSpellCast(Form akSpell)
       isAnimated = True
       Form RWeapon = MyActor.GetEquippedObject(1)
       Form LWeapon = MyActor.GetEquippedObject(0)
-      If RWeapon as Weapon || (RWeapon as Armor).IsShield()
-        MyActor.UnequipItemEx(RWeapon, 1, False)
-      ElseIf RWeapon as Spell
-        MyActor.UnequipSpell(RWeapon as Spell, 1)
+      If RWeapon
+        If RWeapon as Weapon || (RWeapon as Armor).IsShield()
+          MyActor.UnequipItemEx(RWeapon, 1, False)
+        ElseIf RWeapon as Spell
+          MyActor.UnequipSpell(RWeapon as Spell, 1)
+        EndIf
       EndIf
 
-      If LWeapon as Weapon || (LWeapon as Armor).IsShield()
-        MyActor.UnequipItemEx(LWeapon, 2, False)
-      ElseIf LWeapon as Spell
-        MyActor.UnequipSpell(LWeapon as Spell, 0)
+      If LWeapon
+        If LWeapon as Weapon || (LWeapon as Armor).IsShield()
+          MyActor.UnequipItemEx(LWeapon, 2, False)
+        ElseIf LWeapon as Spell
+          MyActor.UnequipSpell(LWeapon as Spell, 0)
+        EndIf
       EndIf
       Utility.Wait(0.5)
       Debug.SendAnimationEvent(MyActor, "SCV_GrabEvent01")
@@ -150,18 +154,22 @@ Event OnSpellCast(Form akSpell)
       Utility.Wait(0.5)
       Debug.SendAnimationEvent(MyActor, "IdleForceDefaultState")
       ;MyActor.PlayIdle(SCVSet.IdleStop)
-      If RWeapon as Weapon || (RWeapon as Armor).IsShield()
-        MyActor.EquipItemEx(RWeapon, 1, False, True)
-      ElseIf RWeapon as Spell
-        MyActor.EquipSpell(RWeapon as Spell, 1)
+      If RWeapon
+        If RWeapon as Weapon || (RWeapon as Armor && (RWeapon as Armor).IsShield())
+          MyActor.EquipItemEx(RWeapon, 1, False, True)
+        ElseIf RWeapon as Spell
+          MyActor.EquipSpell(RWeapon as Spell, 1)
+        EndIf
       EndIf
 
-      If LWeapon as Weapon || (LWeapon as Armor).IsShield()
-        MyActor.EquipItemEx(LWeapon, 2, False, True)
-      ElseIf LWeapon as Spell
-        MyActor.EquipSpell(LWeapon as Spell, 0)
+      If LWeapon
+        If LWeapon as Weapon || (LWeapon as Armor && (LWeapon as Armor).IsShield())
+          MyActor.EquipItemEx(LWeapon, 2, False, True)
+        ElseIf LWeapon as Spell
+          MyActor.EquipSpell(LWeapon as Spell, 0)
+        EndIf
+        isAnimated = False
       EndIf
-      isAnimated = False
     EndIf
   EndIf
 EndEvent

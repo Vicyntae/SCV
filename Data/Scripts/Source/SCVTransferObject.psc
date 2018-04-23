@@ -34,34 +34,45 @@ Int Property Type
     Contents = SCVLib.getContents(TargetActor, a_val)
   EndFunction
 EndProperty
+Int Property InsertType Auto
 
 Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
-  If ItemType == 1 || ItemType == 2
-    If akBaseItem as Potion || akBaseItem as Ingredient
-      If !SCVLib.isInContainer(akBaseItem) && !SCVLib.isNotFood(akBaseItem)
-        Int i = aiItemCount
-        RemoveItem(akBaseItem, aiItemCount, True, TargetActor)
-        While i
-          If akItemReference
-            TargetActor.EquipItem(akItemReference, False, True)
-          Else
-            TargetActor.EquipItem(akBaseItem, False, True)
-          EndIf
-          i -= 1
-        EndWhile
-      EndIf
-    Else
-      SCVLib.addItem(TargetActor, akItemReference, akBaseItem, ItemType,  aiItemCount = aiItemCount)
-      If !akItemReference
-        RemoveItem(akBaseItem, aiItemCount, True)
-      EndIf
+  If InsertType == 1  ;Insert everything into specified type. No edits.
+    SCVLib.addItem(TargetActor, akItemReference, akBaseItem, ItemType, aiItemCount = aiItemCount)
+    If !akItemReference
+      RemoveItem(akBaseItem, aiItemCount, True)
     EndIf
-  ElseIf ItemType == 4 || ItemType == 6
-    SCVLib.addItem(TargetActor, akItemReference, akBaseItem, 6,  aiItemCount = aiItemCount)
-  ElseIf ItemType == 5 || ItemType == 7
-    SCVLib.addItem(TargetActor, akItemReference, akBaseItem, 7,  aiItemCount = aiItemCount)
+  ElseIf InsertType == 2  ;Separate everything based on primary type and digestability (1,2 for stomach, 4,5 for anus)
+    Int CurrentType ;Rewrite this once we differetiate anal and oral vore
+    If (akBaseItem as Potion || akBaseItem as Ingredient) && SCVLib.isDigestible(akBaseItem)
+      CurrentType = 1
+    Else
+      CurrentType = 2
+    EndIf
+    String ItemName = SCVLib.nameGet(akBaseItem)  ;For some reason a "Null" Item keeps being added without any name, and doesn't show up when vomited
+    If !ItemName
+      Return
+    EndIf
+    ;Note("Item Added! Form = " + ItemName + ", ItemType = " + CurrentType + ", NumItems = " + aiItemCount)
+    While aiItemCount
+      If CurrentType == 1
+        If akItemReference
+          RemoveItem(akItemReference, 1, False, TargetActor)
+          TargetActor.EquipItem(akItemReference, False, False)
+        Else
+          RemoveItem(akBaseItem, 1, False, TargetActor)
+          TargetActor.EquipItem(akBaseItem, False, False)
+        EndIf
+      ElseIf CurrentType == 2
+        SCVLib.addItem(TargetActor, akItemReference, akBaseItem, 2)
+        If !akItemReference
+          RemoveItem(akBaseItem, 1, False)
+        EndIf
+      EndIf
+      aiItemCount -= 1
+    EndWhile
+  ;ElseIf InsertType == 3 ???
   EndIf
-
 EndEvent
 
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

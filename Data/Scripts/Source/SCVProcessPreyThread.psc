@@ -99,20 +99,16 @@ Function performStruggle(Actor akTarget, Int aiTargetData = 0)
   EndIf
   Float Stamina = akTarget.GetActorValuePercentage("Stamina")
   Float StaminaProxy = SCVLib.getProxyPercent(akTarget, "Stamina")
-  Note(SCVLib.nameGet(akTarget) + " Stamina Percent = " + Stamina + ", Proxy Percent = " + StaminaProxy)
   If SCVLib.isInPred(akTarget, TargetData)
     SCVLib.giveResExp(akTarget, Struggle + Damage, TargetData)
   EndIf
   If akTarget.Is3DLoaded() || akTarget == PlayerRef
-    Note("Actor is 3DLoaded")
     If akTarget.IsDead()
-      Note("Actor is dead! Handling finished actor")
       SCVLib.handleFinishedActor(akTarget)
     ElseIf Stamina <= 0.05
       Float Magicka = akTarget.GetActorValuePercentage("Magicka")
-      Note("Actor stamina less than 0.05! MagicPerk = " + MagicPerk + ", Magicka = " + Magicka)
       If !MagicPerk || Magicka <= 0.05
-        Note("Actor is exhausted! Handling finished actor.")
+        Notice("Actor is exhausted! Handling finished actor.")
         SCVLib.handleFinishedActor(akTarget)
       EndIf
     EndIf
@@ -177,12 +173,12 @@ Bool Function PlayerThought(Actor akTarget, String sMessage1 = "", String sMessa
   EndIf
 EndFunction
 
-Bool Function PlayerThoughtDB(Actor akTarget, String sKey, Int iOverride = 0, Actor[] akActors = None, Int aiActorIndex = -1)
+Bool Function PlayerThoughtDB(Actor akTarget, String sKey, Int iOverride = 0, Int JA_Actors = 0, Int aiActorIndex = -1)
   {Use this to display player information. Returns whether the passed actor is
   the player.
   Pulls message from database; make sure sKey is valid.
   Will add POV int to end of key, so omit it in the parameter}
-  Return SCVLib.ShowPlayerThoughtDB(akTarget, sKey, iOverride, akActors, aiActorIndex)
+  Return SCVLib.ShowPlayerThoughtDB(akTarget, sKey, iOverride, JA_Actors, aiActorIndex)
 EndFunction
 
 Function Popup(String sMessage)

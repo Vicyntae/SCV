@@ -786,10 +786,10 @@ String[] Function setupInstalledMods()
   EndIf
 
   ;Size Matters ----------------------------------------------------------------
-  If SCLibrary.isModInstalled("SCA.esp") && !SCVSet.SizeMatters_Initialized
+  If SCLibrary.isModInstalled("GTS.esp") && !SCVSet.SizeMatters_Initialized
     setupSizeMatters(JFD_Items)
     SCVSet.SizeMatters_Initialized = True
-  ElseIf !SCLibrary.isModInstalled("SCA.esp") && SCVSet.SizeMatters_Initialized
+  ElseIf !SCLibrary.isModInstalled("GTS.esp") && SCVSet.SizeMatters_Initialized
     removeSizeMatters(JFD_Items)
     SCVSet.SizeMatters_Initialized = False
   EndIf

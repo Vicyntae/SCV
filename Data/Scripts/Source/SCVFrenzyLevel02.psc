@@ -16,7 +16,7 @@ MagicEffect Property SCV_AIFindOVPreyEffect01a Auto
 Actor Property PlayerRef Auto
 String Property DebugName
   String Function Get()
-    Return "[SCV FrenzyLvl01: " + MyActorName + "] "
+    Return "[SCV FrenzyLvl02: " + MyActorName + "] "
   EndFunction
 EndProperty
 Int DMID = 7
@@ -148,12 +148,12 @@ Bool Function PlayerThought(Actor akTarget, String sMessage1 = "", String sMessa
   EndIf
 EndFunction
 
-Bool Function PlayerThoughtDB(Actor akTarget, String sKey, Int iOverride = 0, Actor[] akActors = None, Int aiActorIndex = -1)
+Bool Function PlayerThoughtDB(Actor akTarget, String sKey, Int iOverride = 0, Int JA_Actors = 0, Int aiActorIndex = -1)
   {Use this to display player information. Returns whether the passed actor is
   the player.
   Pulls message from database; make sure sKey is valid.
   Will add POV int to end of key, so omit it in the parameter}
-  Return SCVLib.ShowPlayerThoughtDB(akTarget, sKey, iOverride, akActors, aiActorIndex)
+  Return SCVLib.ShowPlayerThoughtDB(akTarget, sKey, iOverride, JA_Actors, aiActorIndex)
 EndFunction
 
 Function Popup(String sMessage)

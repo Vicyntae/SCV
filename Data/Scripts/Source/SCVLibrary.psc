@@ -193,7 +193,11 @@ Float Function getProxyPercent(Actor akTarget, String asAV, Int aiTargetData = 0
   Int TargetData = getData(akTarget, aiTargetData)
   Float Proxy = getProxy(akTarget, asAV, TargetData)
   Float AVBase = getProxyBase(akTarget, asAV, TargetData)
-  Return Proxy / AVBase
+  If AVBase > 0
+    Return Proxy / AVBase
+  Else
+    Return 0
+  EndIf
 EndFunction
 
 Function setProxy(Actor akTarget, String asAV, Float aiValue, Int aiTargetData = 0)
@@ -1051,10 +1055,10 @@ Function transferInventory(Actor akTarget, Actor akSource, Int aiType)
 	{Moves all items from actor's inventory to their stomach
   aiType refers to destination of the items (ie 1 = all items going into stomach)
   4 == all items going into anus, 11 == all items going into bladder}
-	SCVTransferObject ST_TransferRef = akTarget.PlaceAtMe(SCVSet.SCV_TransferBase) as SCVTransferObject
-	ST_TransferRef.TransferTarget = akTarget
+  SCVTransferObject ST_TransferRef = SCVSet.SCV_TransferChest as SCVTransferObject
+  ST_TransferRef.TransferTarget = akTarget
+  ST_TransferRef.InsertType = 2
 	ST_TransferRef.Type = aiType
-  SCLibrary.addToObjectTrashList(ST_TransferRef, 5)
 	akSource.RemoveAllItems(ST_TransferRef, False, True)	;See SCVTransferObject Script for remaining procedure
 EndFunction
 
@@ -1065,16 +1069,27 @@ Function transferSCLItems(Actor akTarget, Actor akSource, Int aiType)
   Int j = JIntMap.nextKey(SCLSet.JI_ItemTypes)
   While j
     Int JF_Source = getContents(akSource, j)
-    Int i = JValue.count(JF_Source)
-    While i
-      i -= 1
-      Form Item = JFormMap.getNthKey(JF_Source, i)
-      If Item as Actor
-        insertPrey(akTarget, Item as Actor, aiType, False, False)
-      Else
-        addItem(akTarget, Item as ObjectReference, Item, aiType)
+    Form ItemKey = JFormMap.nextKey(JF_Source)
+    While ItemKey
+      If aiType == 1  ;Autosort into digest/nondigest
+        If ItemKey as Actor
+          insertPrey(akTarget, ItemKey as Actor, 1, False, False)
+        ElseIf (ItemKey as Potion || ItemKey as Ingredient) && isDigestible(ItemKey)
+          akTarget.EquipItem(ItemKey, False, False)
+        Else
+          addItem(akTarget, ItemKey as ObjectReference, ItemKey, 2)
+        EndIf
+      ElseIf aiType == 2  ;Store everything
+        If ItemKey as Actor
+          insertPrey(akTarget, ItemKey as Actor, 2, False, False)
+        Else
+          addItem(akTarget, ItemKey as ObjectReference, ItemKey, 2)
+        EndIf
+      ;ElseIf aiType == 4  ;Whatever
       EndIf
+      ItemKey = JFormMap.nextKey(JF_Source, ItemKey)
     EndWhile
+    JValue.clear(JF_Source)
     j = JIntMap.nextKey(SCLSet.JI_ItemTypes, j)
   EndWhile
 EndFunction

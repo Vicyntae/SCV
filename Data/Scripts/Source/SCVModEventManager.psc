@@ -129,35 +129,42 @@ Event OnActorRemove(Form akSource, Form akActor, Int aiItemType)
   EndIf
 EndEvent
 
-Event OnDigestItemFinish(Form akEater, Form akFood)
+Event OnDigestItemFinish(Form akEater, Form akFood, Float afDigestValue)
   If akFood as Actor && akEater as Actor
     SCVLib.transferInventory(akEater as Actor, akFood as Actor, 1)
     SCVLib.transferSCLItems(akEater as Actor, akFood as Actor, 1)
     If SCVLib.hasGems(akEater as Actor)
-      ;Note("Digest Finished and pred has gems! Filling Gem.")
       SCVLib.fillGem(akEater as Actor, akFood as Actor)
     EndIf
 
     If SCVSet.SizeMatters_Initialized && SCVSet.SizeMattersActive
-      Int Nourish = SCVLib.getTotalPerkLevel(akEater as Actor, "SCV_Nourish")
-      If Nourish
+      Int NourishPerk = SCVLib.getCurrentPerkLevel(akEater as Actor, "SCV_Nourish")
+      If NourishPerk
+        Notice("Size Matters Active. " + SCVLib.nameGet(akEater) + " has nourish perk.")
+        Int Nourish = SCVLib.getTotalPerkLevel(akEater as Actor, "SCV_Nourish")
         Float NModify = 1 + ((Nourish - 1) / 10)
-        Float DigestValue = SCVLib.genDigestValue(akFood as Actor)
-        DigestValue /= 100
+        Float DigestValue = afDigestValue
+        DigestValue /= 5000
         DigestValue *= NModify
+        Notice("Added value = " + afDigestValue)
 
-        If akEater == PlayerRef
-          gtsPlayerFunctions PF = Game.GetFormFromFile(0x0201665B, "GTS.esp") as gtsPlayerFunctions
-          PlayerRef.ModActorValue("FavorActive", DigestValue)
-          Float CurrentSize = PF.GetCurrentSize()
-          Float NewSize = PF.GetMaxSize(PF.GetRawRequirementFromSize(CurrentSize) + DigestValue)
-          PF.ScaleActor(NewSize, CurrentSize)
+        Quest FunctionQuest = Game.GetFormFromFile(0x0201665B, "GTS.esp") as Quest
+        If FunctionQuest
+          If akEater == PlayerRef
+            gtsPlayerFunctions PF = FunctionQuest as gtsPlayerFunctions
+            PlayerRef.ModActorValue("FavorActive", DigestValue)
+            Float CurrentSize = PF.GetCurrentSize()
+            Float NewSize = PF.GetMaxSize(PF.GetRawRequirementFromSize(CurrentSize) + DigestValue)
+            PF.ScaleActor(NewSize, CurrentSize)
+          Else
+            gtsNPCFunctions NF = Game.GetFormFromFile(0x0201665B, "GTS.esp") as gtsNPCFunctions
+            (akEater as Actor).ModActorValue("FavorActive", DigestValue)
+            Float CurrentSize = NF.GetCurrentSize(akEater as Actor)
+            Float NewSize = NF.GetMaxSize(akEater as Actor, NF.GetRawRequirementFromSize(CurrentSize) + DigestValue)
+            NF.ScaleActor(akEater as Actor, NewSize, CurrentSize)
+          EndIf
         Else
-          gtsNPCFunctions NF = Game.GetFormFromFile(0x0201665B, "GTS.esp") as gtsNPCFunctions
-          (akEater as Actor).ModActorValue("FavorActive", DigestValue)
-          Float CurrentSize = NF.GetCurrentSize(akEater as Actor)
-          Float NewSize = NF.GetMaxSize(akEater as Actor, NF.GetRawRequirementFromSize(CurrentSize) + DigestValue)
-          NF.ScaleActor(akEater as Actor, NewSize, CurrentSize)
+          Issue("Function Quest Not Found!", 1)
         EndIf
       EndIf
     EndIf
@@ -202,12 +209,12 @@ Bool Function PlayerThought(Actor akTarget, String sMessage1 = "", String sMessa
   EndIf
 EndFunction
 
-Bool Function PlayerThoughtDB(Actor akTarget, String sKey, Int iOverride = 0, Actor[] akActors = None, Int aiActorIndex = -1)
+Bool Function PlayerThoughtDB(Actor akTarget, String sKey, Int iOverride = 0, Int JA_Actors = 0, Int aiActorIndex = -1)
   {Use this to display player information. Returns whether the passed actor is
   the player.
   Pulls message from database; make sure sKey is valid.
   Will add POV int to end of key, so omit it in the parameter}
-  Return SCVLib.ShowPlayerThoughtDB(akTarget, sKey, iOverride, akActors, aiActorIndex)
+  Return SCVLib.ShowPlayerThoughtDB(akTarget, sKey, iOverride, JA_Actors, aiActorIndex)
 EndFunction
 
 Function Popup(String sMessage)

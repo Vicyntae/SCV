@@ -268,73 +268,79 @@ Float Function calculateChance(Actor akPred, Actor akPrey)
 
   Race PreyRace = akPrey.GetRace()
   If PreyRace.HasKeyword(ActorTypeNPC)
+    Int TruePerkRank = SCVLib.getCurrentPerkLevel(akPred, "SCV_FollowerofNamira")
     Int PerkRank = SCVLib.getTotalPerkLevel(akPred, "SCV_FollowerofNamira")
-    If PerkRank < 1
+    If TruePerkRank < 1
       Notice("Actor Type NPC. Perk not taken. Returning 0")
       PlayerThought(akPred, "They're human! I can't eat them!", "They're human! You can't eat them!", "They're human! " + PredName + " can't eat them!")
       Return 0
-    ElseIf PerkRank <= 3
-      Chance *= 1.2
+    ElseIf PerkRank > 1
+      Chance *= 1 + (PerkRank * 0.5)
     EndIf
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeDragon)
+    Int TruePerkRank = SCVLib.getCurrentPerkLevel(akPred, "SCV_DragonDevourer")
     Int PerkRank = SCVLib.getTotalPerkLevel(akPred, "SCV_DragonDevourer")
-    If PerkRank < 1
+    If TruePerkRank < 1
       Notice("Actor Type Dragon. Perk not taken. Returning 0")
       Notice(PreyName + " is a Dragon! " + PredName + " does not have perk! Returning 0")
       PlayerThought(akPred, "That's a bloody dragon! I can't even imagine eating that!", "That's a dragon! How could you even think about eating that!?", "That's a dragon! " + PredName + " can't eat that!")
       Return 0
-    ElseIf PerkRank >= 3
-      Chance *= 1.2
+    ElseIf PerkRank > 1
+      Chance *= 1 + ((PerkRank - 1) * 0.5)
     EndIf
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeDwarven)
+    Int TruePerkRank = SCVLib.getCurrentPerkLevel(akPred, "SCV_MetalMuncher")
     Int PerkRank = SCVLib.getTotalPerkLevel(akPred, "SCV_MetalMuncher")
-    If PerkRank < 1
+    If TruePerkRank < 1
       Notice("Actor Type Dwarven. Perk not taken. Returning 0")
       Notice(PreyName + " is automaton! " + PredName + " does not have perk! Returning 0")
       PlayerThought(akPred, "It's made of metal! I can't eat that!", "It's made of metal! You can't eat that!", "It's made of metal! " + PredName +" can't eat that!")
       Return 0
-    ElseIf PerkRank >= 3
-      Chance *= (1 + (PerkRank / 20))
+    ElseIf PerkRank > 1
+      Chance *= 1 + ((PerkRank - 1) * 0.5)
     EndIf
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeGhost)
+    Int TruePerkRank = SCVLib.getCurrentPerkLevel(akPred, "SCV_SpiritSwallower")
     Int PerkRank = SCVLib.getTotalPerkLevel(akPred, "SCV_SpiritSwallower")
-    If PerkRank < 1
+    If TruePerkRank < 1
       Notice("Actor Type Ghost. Perk not taken. Returning 0")
       Notice(PreyName + " is a Ghost! " + PredName + " does not have perk! Returning 0")
       PlayerThought(akPred, "By the gods, I can't eat a ghost! What was I thinking!?", "You fail to grab hold of the ghost, because there's nothing there.", PredName + " can't hold the ghost!")
       Return 0
-    ElseIf PerkRank >= 3
-      Chance *= 1.2
+    ElseIf PerkRank > 1
+      Chance *= 1 + ((PerkRank - 1) * 0.5)
     EndIf
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeUndead)
+    Int TruePerkRank = SCVLib.getCurrentPerkLevel(akPred, "SCV_ExpiredEpicurian")
     Int PerkRank = SCVLib.getTotalPerkLevel(akPred, "SCV_ExpiredEpicurian")
-    If PerkRank < 1
+    If TruePerkRank < 1
       Notice("Actor Type Undead. Perk not taken. Returning 0")
       Notice(PreyName + " is Undead! " + PredName + " does not have perk! Returning 0")
       PlayerThought(akPred, "It's bones and dust! I don't want to eat that!", "You most certainly don't want to eat that.", PredName + "recoils at the thought of eating dusty bones.")
       Return 0
-    ElseIf PerkRank >= 3
-      Chance *= 1.2
+    ElseIf PerkRank > 1
+      Chance *= 1 + ((PerkRank - 1) * 0.5)
     EndIf
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeDaedra)
+    Int TruePerkRank = SCVLib.getCurrentPerkLevel(akPred, "SCV_DaedraDieter")
     Int PerkRank = SCVLib.getTotalPerkLevel(akPred, "SCV_DaedraDieter")
-    If PerkRank < 1
+    If TruePerkRank < 1
       Notice("Actor Type Daedra. Perk not taken. Returning 0")
       Notice(PreyName + " is Daedra! " + PredName + " does not have perk! Returning 0")
       PlayerThought(akPred, "It's a daedra! I can't eat that!", "You don't have the nerve to try and eat the daedra", PredName + " couldn't overpower the daedra")
       Return  0
-    ElseIf PerkRank >= 3
-      Chance *= 1.2
+    ElseIf PerkRank > 1
+      Chance *= 1 + ((PerkRank - 1) * 0.5)
     EndIf
   EndIf
 
@@ -377,12 +383,12 @@ Bool Function PlayerThought(Actor akTarget, String sMessage1 = "", String sMessa
   EndIf
 EndFunction
 
-Bool Function PlayerThoughtDB(Actor akTarget, String sKey, Int iOverride = 0, Actor[] akActors = None, Int aiActorIndex = -1)
+Bool Function PlayerThoughtDB(Actor akTarget, String sKey, Int iOverride = 0, Int JA_Actors = 0, Int aiActorIndex = -1)
   {Use this to display player information. Returns whether the passed actor is
   the player.
   Pulls message from database; make sure sKey is valid.
   Will add POV int to end of key, so omit it in the parameter}
-  Return SCVLib.ShowPlayerThoughtDB(akTarget, sKey, iOverride, akActors, aiActorIndex)
+  Return SCVLib.ShowPlayerThoughtDB(akTarget, sKey, iOverride, JA_Actors, aiActorIndex)
 EndFunction
 
 Function Popup(String sMessage)
