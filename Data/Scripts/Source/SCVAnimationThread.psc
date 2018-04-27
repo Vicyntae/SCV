@@ -17,7 +17,7 @@ Bool Gender
 Int JM_BonesChanged
 Bool thread_queued
 Int Working = 0
-String AnimEvent
+SCVAnimationBase AnimInfo
 Float PositionX
 Float PositionY
 Float PositionZ
@@ -111,3 +111,22 @@ Event OnUpdate()
 
   Working -= 1
 EndEvent
+
+;Debug.SendAnimationEvent(ActorRef, "SOSBend"+Schlong) ;Set Schlong Position
+
+;/function OpenMouth(Actor ActorRef) global Sets Mouth state
+	ClearPhoneme(ActorRef)
+	ActorRef.SetExpressionOverride(16, 80)
+	MfgConsoleFunc.SetPhonemeModifier(ActorRef, 0, 1, 60)
+	Utility.WaitMenuMode(0.1)
+endFunction
+
+function CloseMouth(Actor ActorRef) global
+	ActorRef.SetExpressionOverride(7, 50)
+	MfgConsoleFunc.SetPhonemeModifier(ActorRef, 0, 1, 0)
+	Utility.WaitMenuMode(0.1)
+endFunction
+
+bool function IsMouthOpen(Actor ActorRef) global
+	return GetPhoneme(ActorRef, 1) >= 0.4 || (GetExpression(ActorRef, true) == 16.0 && GetExpression(ActorRef, false) >= 0.7)
+endFunction;/

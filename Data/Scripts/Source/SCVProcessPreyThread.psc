@@ -83,19 +83,21 @@ Function performStruggle(Actor akTarget, Int aiTargetData = 0)
   Bool MagicPerk = akTarget.hasSpell(SCVSet.StruggleSorceryPerk)
   ;Note(SCVLib.nameGet(akTarget) + " stamina proxy = " + SCVLib.getProxy(akTarget, "Stamina") + "/" + SCVLib.getProxyBase(akTarget, "Stamina") + ", " + SCVLib.getProxyPercent(akTarget, "Stamina"))
   If Struggle
+    Float SMod = SCVSet.StruggleMod
     If MagicPerk
-      akTarget.DamageActorValue("Stamina", Struggle* SCVSet.StruggleMod)
-      akTarget.DamageActorValue("Magicka", Struggle* SCVSet.StruggleMod)
-      SCVLib.modProxy(akTarget, "Stamina", -(Struggle * SCVSet.StruggleMod))
-      SCVLib.modProxy(akTarget, "Magicka", -(Struggle * SCVSet.StruggleMod))
+      akTarget.DamageActorValue("Stamina", Struggle* SMod / 2)
+      akTarget.DamageActorValue("Magicka", Struggle* SMod / 2)
+      SCVLib.modProxy(akTarget, "Stamina", -(Struggle * SMod / 2))
+      SCVLib.modProxy(akTarget, "Magicka", -(Struggle * SMod / 2))
     Else
-      akTarget.DamageActorValue("Stamina", Struggle * SCVSet.StruggleMod)
-      SCVLib.modProxy(akTarget, "Stamina", -(Struggle * SCVSet.StruggleMod))
+      akTarget.DamageActorValue("Stamina", Struggle * SMod)
+      SCVLib.modProxy(akTarget, "Stamina", -(Struggle * SMod))
     EndIf
   EndIf
   If Damage
-    akTarget.DamageActorValue("Health", Damage * SCVSet.DamageMod)
-    SCVLib.modProxy(akTarget, "Health", -(Damage * SCVSet.DamageMod))
+    Float DMod = SCVSet.DamageMod
+    akTarget.DamageActorValue("Health", Damage * DMod)
+    SCVLib.modProxy(akTarget, "Health", -(Damage * DMod))
   EndIf
   Float Stamina = akTarget.GetActorValuePercentage("Stamina")
   Float StaminaProxy = SCVLib.getProxyPercent(akTarget, "Stamina")

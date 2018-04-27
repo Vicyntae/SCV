@@ -1624,7 +1624,21 @@ Int Function fillGem(Actor akPred, Actor akPrey, Int aiTargetData = 0)
   While i < Num && !Done
     If Gems[i] > 0  ;If there is a gem with size equal to or greater than the soul size
       Notice("Found fillable gem! Soul Size = " + SoulSize + ", Gem size = " + i)
-      replaceGem(akPred, i, SoulSize) ;input the original size and the new size
+      Int PerkRank = getTotalPerkLevel(akPred, "SCV_PitOfSouls")
+      Int AddGem = 1
+      If PerkRank
+        Float Chance = 0.01 * PerkRank ;1% chance
+        Bool Failed
+        While !Failed && AddGem < 11  ;Max 10 addition gems
+          Float Success = Utility.RandomInt()
+          If Success < Chance
+            AddGem += 1
+          Else
+            Failed = True
+          EndIf
+        EndWhile
+      EndIf
+      replaceGem(akPred, i, SoulSize, aiNum = AddGem, aiTargetData = TargetData) ;input the original size and the new size
       Done = True
     Else
       i += 1
@@ -1751,7 +1765,7 @@ Form[] Function getGemTypes(Int aiSize)
   Return ReturnArray
 EndFunction
 
-Function replaceGem(Actor akTarget, Int aiOriginal, Int aiNew, Int aiItemType = 2, Int aiTargetData = 0)
+Function replaceGem(Actor akTarget, Int aiOriginal, Int aiNew, Int aiItemType = 2, Int aiNum = 1, Int aiTargetData = 0)
   Int TargetData = getData(akTarget, aiTargetData)
   Form[] OriginalArray = getGemTypes(aiOriginal)
   Form[] NewArray = getGemTypes(aiNew)
@@ -1768,7 +1782,7 @@ Function replaceGem(Actor akTarget, Int aiOriginal, Int aiNew, Int aiItemType = 
     EndIf
   EndIf
   Notice("Default soul size for new gem = " + (OriginalArray[0] as SoulGem).GetSoulSize())
-  addItem(akTarget, akBaseObject = NewArray[0], aiItemType = aiItemType)  ;Choose filled gem
+  addItem(akTarget, akBaseObject = NewArray[0], aiItemType = aiItemType, aiItemCount = aiNum)  ;Choose filled gem
 EndFunction
 
 Form Function findGemFragment(Actor akTarget, Int aiItemType, Int aiTargetData = 0)

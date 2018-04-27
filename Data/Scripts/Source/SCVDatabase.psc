@@ -32,7 +32,7 @@ Function setupPerksList()
 
   ;Metal Muncher ***************************************************************
   JA_Desc = JArray.object()
-  JArray.addStr(JA_Desc, "Increases chance of success of swallow spells.")
+  JArray.addStr(JA_Desc, "Allows you to eat Dwemer Automatons.")
   JArray.addStr(JA_Desc, "Allows you to eat Dwemer Automatons.")
   JArray.addStr(JA_Desc, "Increases chances of success in devouring Dwemer Automatons by 5% and gives a chance of acquiring bonus items from them.")
   JArray.addStr(JA_Desc, "Increases chances of success in devouring Dwemer Automatons by 10%.")
@@ -145,9 +145,9 @@ Function setupPerksList()
   ;Stalker **********************************************************
   JA_Desc = JArray.object()
   JArray.addStr(JA_Desc, "Increases swallow success chance when sneaking and unseen by your prey.")
-  JArray.addStr(JA_Desc, "Increases swallow success chance by 20% when sneaking and unseen by your prey.")
-  JArray.addStr(JA_Desc, "Increases swallow success chance by another 20% when sneaking and unseen by your prey. Increases movement speed slightly while you have struggling prey and are sneaking.")
-  JArray.addStr(JA_Desc, "Increases swallow success chance by yet another 20% when sneaking and unseen by your prey. Increases movement speed significantly while you have struggling prey and are sneaking.")
+  JArray.addStr(JA_Desc, "Increases swallow success chance by 5% when sneaking and unseen by your prey.")
+  JArray.addStr(JA_Desc, "Increases swallow success chance by another 5% when sneaking and unseen by your prey. Increases movement speed slightly while you have struggling prey and are sneaking.")
+  JArray.addStr(JA_Desc, "Increases swallow success chance by yet another 5% when sneaking and unseen by your prey. Increases movement speed significantly while you have struggling prey and are sneaking.")
 
 
   JA_Reqs = JArray.object()
@@ -209,9 +209,9 @@ Function setupPerksList()
   ;Stroke of Luck **********************************************************
   JA_Desc = JArray.object()
   JArray.addStr(JA_Desc, "Gives a chance that a pred's devour attempt will fail.")
+  JArray.addStr(JA_Desc, "Gives a 5% chance that a predator's devour attempt will fail.")
   JArray.addStr(JA_Desc, "Gives a 10% chance that a predator's devour attempt will fail.")
   JArray.addStr(JA_Desc, "Gives a 20% chance that a predator's devour attempt will fail.")
-  JArray.addStr(JA_Desc, "Gives a 30% chance that a predator's devour attempt will fail.")
 
 
   JA_Reqs = JArray.object()
@@ -225,9 +225,9 @@ Function setupPerksList()
   ;Expect Pushback **********************************************************
   JA_Desc = JArray.object()
   JArray.addStr(JA_Desc, "Knock back enemies back after an enemy's failed devour attempt.")
-  JArray.addStr(JA_Desc, "Has a 50% chance of knocking enemies back after an enemy's failed devour attempt.")
-  JArray.addStr(JA_Desc, "Increases range of knock back.")
-  JArray.addStr(JA_Desc, "Knock back occurs for every failed devour attempt.")
+  JArray.addStr(JA_Desc, "Staggers enemies after an enemy's failed devour attempt. Restores stamina.")
+  JArray.addStr(JA_Desc, "Increases force of knock back. Restores magicka.")
+  JArray.addStr(JA_Desc, "Increases force of knock back even more. Buffs your attacking power.")
 
 
   JA_Reqs = JArray.object()

@@ -144,6 +144,7 @@ Spell Property SCV_PredMarker Auto
 Spell Property SCV_OVPredMarker Auto
 Spell Property SCV_AVPredMarker Auto
 Spell Property SCV_OVFrenzySelfSpell01 Auto
+Spell Property SCV_Alpha0Spell01 Auto
 
 MagicEffect Property SCV_FrenzyLevel2 Auto
 MagicEffect Property SCV_FrenzyLevel1 Auto
@@ -174,6 +175,8 @@ Spell [] Property SCV_CorneredRatAbilityArray Auto
 Spell [] Property SCV_FillingMealAbilityArray Auto
 Spell [] Property SCV_ThrillingStruggleAbilityArray Auto
 Spell Property StruggleSorceryPerk Auto
+Spell Property SCV_ExpectPushbackBuffSpell Auto
+
 
 Spell Property SCV_MaxPredSpell Auto
 
