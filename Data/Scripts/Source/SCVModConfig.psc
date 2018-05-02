@@ -43,10 +43,23 @@ Event OnPageReset(string a_page)
         AddTextOptionST("DisplayDigestRate_T", "$Base Digestion Rate", SCLib.roundFlt(JMap.getFlt(AD, "STDigestionRate"), 1))
         AddTextOptionST("DisplayGluttony_T", "$Gluttony", JMap.getFlt(SelectedData, "SCLGluttony"))
       EndIf
+      AddTextOptionST("DisplayNumStored_T", "$Num Items Stored", SCLib.countItemTypes(SelectedActor, 2, True))
       AddTextOptionST("DisplayFullness_T", "$Fullness", JMap.getFlt(AD, "STFullness"))  ;12
       AddTextOptionST("DisplayMax_T", "$Max Capacity", SCLib.getMax(S)) ;14
+      If SCLSet.WF_Active
+        If SCLSet.DebugEnable
+          AddSliderOptionST("WF_EditMaxStorage_S", "$Set Max Num Items To Stow", SCLib.WF_getSolidMaxNumItems(SelectedActor))
+        Else
+          AddTextOptionST("WF_DisplayMaxStorage_T", "$Max Num Items To Stow", SCLib.WF_getSolidMaxNumItems(SelectedActor))
+        EndIf
+        AddTextOptionST("WF_DisplayMaxInsert_T", "$Max Insertable Size", SCLib.WF_getSolidMaxInsert(SelectedActor, SelectedData))
+        AddTextOptionST("DisplayNumStowedItems_T", "$Num Items Stowed Away", SCLib.countItemTypes(SelectedActor, 4, True))
+        If SCLSet.WF_SolidActive
+          AddTextOptionST("DisplaySolidFullness_T", "$Solid Fulless", SCLib.roundFlt(SCLib.WF_getTotalSolidFullness(SelectedActor, SelectedData), 1))
+          AddTextOptionST("DisplaySolidIllness", "$Solid Illness Level", JMap.getInt(SelectedData, "WF_SolidIllnessLevel"))
+        EndIf
+      EndIf
   		;AddTextOptionST("DisplayTotalDigest_T", "Total Digested Food", JMap.getFlt(AD, "STTotalDigestedFood")) ;16
-
   		AddMenuOptionST("DisplayStomachContents_M", "$Show Stomach Contents", "") ;18
 
       SetCursorPosition(5)
@@ -109,6 +122,7 @@ Event OnPageReset(string a_page)
       addPerkOption(S, "SCLStoredLimitUp") ;9
       addPerkOption(S, "SCLHeavyBurden") ;11
       addPerkOption(S, "SCLAllowOverflow") ;13
+      addPerkOption(S, "WF_BasementStorage")
 
       addPerkOption(S, "SCV_IntenseHunger")
       addPerkOption(S, "SCV_MetalMuncher")
@@ -118,7 +132,7 @@ Event OnPageReset(string a_page)
       addPerkOption(S, "SCV_ExpiredEpicurian")
       addPerkOption(S, "SCV_DaedraDieter")
       addPerkOption(S, "SCV_Stalker")
-      addPerkOption(S, "SCV_RemoveLimits")
+      ;addPerkOption(S, "SCV_RemoveLimits")
       addPerkOption(S, "SCV_Constriction")
       addPerkOption(S, "SCV_Acid")
       addPerkOption(S, "SCV_Nourish")
@@ -218,7 +232,21 @@ Event OnPageReset(string a_page)
       AddTextOptionST("ResetEquipmentTiers_T", "Reset All Thresholds", "")
       AddEmptyOption()
     EndIf/;
+    AddEmptyOption()
+    AddEmptyOption()
+    AddHeaderOption("Waste Function Settings")
+    AddToggleOptionST("WF_Enable_TOG", "$Enable Waste Functions", SCLSet.WF_Active)
+    If SCLSet.WF_Active
+      AddSliderOptionST("SetAVDestination_S", "$Choose Anal Vore Behavior.", SCVSet.AVDestinationChoice, "Option {0}")
+      AddKeyMapOptionST("WF_ActionKeyPick_KM", "$Choose Waste Function Action Key", SCLSet.WF_ActionKey)
+      AddToggleOptionST("WF_SolidEnable_TOG", "$Enable Solid Waste Functions", SCLSet.WF_SolidActive)
+      AddSliderOptionST("WF_SolidIllnessBuildUpDecrease_S", "Build Up Decrease Rate", SCLSet.WF_SolidIllnessBuildUpDecrease, "{1}/hr")
+      AddEmptyOption()
+      AddToggleOptionST("WF_LiquidEnable_TOG", "$Enable Liquid Waste Functions", SCLSet.WF_LiquidActive)
 
+      ;AddToggleOptionST("WF_GasEnable_TOG", "$Enable Gas Waste Functions", SCLSet.WF_GasActive)
+      ;AddEmptyOption()
+    EndIf
     AddHeaderOption("Other Settings")
     AddHeaderOption("")
     AddSliderOptionST("PlayerMessagePOV_S", "$Message POV", SCLSet.PlayerMessagePOV, SCLib.addIntSuffix(SCLSet.PlayerMessagePOV))
@@ -1151,6 +1179,29 @@ State AVPredPercent_S
 
   Event OnHighlightST()
     SetInfoText("Set percentage of anal predators")
+  EndEvent
+EndState
+
+State SetAVDestination_S
+  Event OnSliderOpenST()
+    SetSliderDialogStartValue(SCVSet.AVDestinationChoice)
+    SetSliderDialogDefaultValue(SCVSet.AVDestinationChoice)
+    SetSliderDialogRange(0, 1)
+    SetSliderDialogInterval(1)
+  EndEvent
+
+  Event OnSliderAcceptST(float a_value)
+    SCVSet.AVDestinationChoice = a_value as Int
+    SetSliderOptionValueST(a_value, "Option {0}")
+  EndEvent
+
+  Event OnDefaultST()
+    SCVSet.AVDestinationChoice = 0
+    SetSliderOptionValueST(0, "Option {0}")
+  EndEvent
+
+  Event OnHighlightST()
+    SetInfoText("Sets how anal vore behaves (0 = Sent to Colon containers, 1 = Sent to Stomach containers)")
   EndEvent
 EndState
 

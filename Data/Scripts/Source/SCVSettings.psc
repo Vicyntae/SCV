@@ -108,27 +108,37 @@ Bool Property EnableFTeamPreds
   EndFunction
 EndProperty
 
-Float _StruggleMod = 7.0
+GlobalVariable Property SCV_SET_StruggleMod Auto ;Default 1
 Float Property StruggleMod
   Float Function Get()
-    Return _StruggleMod
+    Return SCV_SET_StruggleMod.GetValue()
   EndFunction
   Function Set(Float a_val)
     If a_val >= 0
-      _StruggleMod = a_val
+      SCV_SET_StruggleMod.SetValue(a_val)
     EndIf
   EndFunction
 EndProperty
 
-Float _DamageMod = 3.0
+GlobalVariable Property SCV_SET_DamageMod Auto  ;Default 1
 Float Property DamageMod
   Float Function Get()
-    Return _DamageMod
+    Return SCV_SET_DamageMod.GetValue()
   EndFunction
   Function Set(Float a_val)
     If a_val >= 0
-      _DamageMod = a_val
+      SCV_SET_DamageMod.SetValue(a_val)
     EndIf
+  EndFunction
+EndProperty
+
+GlobalVariable Property SCV_SET_AVDestinationChoice Auto
+Int Property AVDestinationChoice
+  Int Function Get()
+    Return SCV_SET_AVDestinationChoice.GetValueInt()
+  EndFunction
+  Function Set(Int a_val)
+    SCV_SET_AVDestinationChoice.SetValueInt(a_val)
   EndFunction
 EndProperty
 
@@ -230,10 +240,9 @@ SCVInsertItemsContainer Property SCV_InsertItemsChest Auto
 Spell Property SCV_AIFindOVPreySpell01a Auto
 Spell Property SCV_AIFindOVPreySpellStop01 Auto
 
-Int Property AVDestinationChoice = 1 Auto
 ;Mod References (Fill these in using a patch)
 ;SCA ---------------------------------------------------------------------------
-Bool Property SCA_Initialized = False Auto
+;Bool Property SCA_Initialized = False Auto
 ;/SCALibrary Property SCALib Auto
 SCASettings Property SCASet Auto
 SCADatabase Property SCAData Auto

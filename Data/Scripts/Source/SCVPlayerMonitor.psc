@@ -4,6 +4,7 @@ Function Setup()
   Parent.Setup()
   RegisterForModEvent("SCLActionKeyChange", "OnActionKeyChange")
   RegisterForKey(SCLSet.ActionKey)
+  RegisterForKey(SCLSet.WF_ActionKey)
   UnregisterForMenu("Console")
   RegisterForMenu("Console")
 EndFunction
@@ -15,10 +16,11 @@ Function reloadMaintenence()
   RegisterForMenu("Console")
 EndFunction
 
-Event OnActionKeyChange(Int aiActionKey)
+Event OnActionKeyChange()
   Notice("Action key changed")
   UnregisterForAllKeys()
-  RegisterForKey(aiActionKey)
+  RegisterForKey(SCLSet.ActionKey)
+  RegisterForKey(SCLSet.WF_ActionKey)
 EndEvent
 
 Event OnMenuOpen(string menuName)
@@ -54,16 +56,59 @@ Event OnKeyDown(int keyCode)
         SCVLib.sendActorMainMenuOpenEvent(CurrentRef as Actor, 0)
       Else
         Notice("Opening transfer menu for " + SCVLib.nameGet(CurrentRef))
-        SCVLib.openTransferMenu(CurrentRef as Actor)
+        Int Option = 1
+        If SCLSet.WF_Active
+          Option = SCLSet.SCL_MES_WF_StorageChoice.Show()
+        EndIf
+        If Option == 1
+          SCVLib.openTransferMenu(CurrentRef as Actor)
+        ElseIf Option == 2
+          SCVLib.openTransferMenu(CurrentRef as Actor, "Colon")
+        EndIf
       EndIf
     Else
       Form CurrentBase = CurrentRef.GetBaseObject()
       If CurrentBase as Potion || CurrentBase as Ingredient || CurrentBase as Ammo || CurrentBase as Armor || CurrentBase as Book || CurrentBase as LeveledItem || CurrentBase as MiscObject || CurrentBase as SoulGem || CurrentBase as Scroll || CurrentBase as Weapon
         ;Later: make it so that potions/ingredients not in containers are eaten?
-        Notice("Adding " + SCVLib.nameGet(CurrentRef) + " to stomach")
-        SCVLib.addItem(MyActor, CurrentRef, aiItemType = 2)
-        SCVLib.updateSingleContents(MyActor, 2)
-        SCVLib.quickUpdate(MyActor)
+        Int Option = 1
+        If SCLSet.WF_Active
+          Option = SCLSet.SCL_MES_WF_StorageChoice.Show()
+        EndIf
+        If Option == 1
+          Float CurrentWeight = JMap.getFlt(ActorData, "STFullness")
+          Float DigestValue = SCLib.genDigestValue(CurrentBase)
+          Float MaxWeight = SCLib.getMax(MyActor, ActorData)
+          If MaxWeight >= CurrentWeight + DigestValue
+            Notice("Adding " + SCVLib.nameGet(CurrentRef) + " to stomach")
+            SCVLib.addItem(MyActor, CurrentRef, aiItemType = 2)
+            SCVLib.updateSingleContents(MyActor, 2)
+            SCVLib.quickUpdate(MyActor)
+          EndIf
+        ElseIf Option == 2
+          Float MaxWeight = SCLib.WF_getSolidMaxInsert(MyActor, ActorData)
+          Int NumItems = SCLib.countItemTypes(MyActor, 4, True)
+          Int MaxNumItems = SCLib.WF_getSolidMaxNumItems(MyActor, ActorData)
+          Float DigestValue = SCLib.genDigestValue(CurrentBase)
+          If DigestValue <= MaxWeight && NumItems < MaxNumItems
+            Notice("Adding " + SCLib.nameGet(CurrentRef) + " to colon")
+            SCLib.addItem(MyActor, CurrentRef, aiItemType = 4)
+            SCLib.updateSingleContents(MyActor, 4)
+            SCLib.quickUpdate(MyActor)
+          EndIf
+        EndIf
+      EndIf
+    EndIf
+    UnlockEX()
+  ElseIf keyCode == SCLSet.WF_ActionKey
+    If Utility.IsInMenuMode()
+      Return
+    EndIf
+    If !LockEX()
+      Return
+    EndIf
+    If SCLSet.WF_Active
+      If MyActor.IsSneaking()
+        SCVLib.WF_SolidRemove(MyActor, ActorData)
       EndIf
     EndIf
     UnlockEX()

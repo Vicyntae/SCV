@@ -13,7 +13,21 @@ Function setupItemTypes()
   SCLibrary.addItemType(8, "Struggling", "Currently struggling prey.", "StrugglingFullness", True)
 EndFunction
 
-Function setupPerksList()
+Function setupAggregateValues()
+  Parent.setupAggregateValues()
+
+  Int JA_AggValues = JArray.object()
+  JArray.addStr(JA_AggValues, "StruggleFullness1")
+  JArray.addStr(JA_AggValues, "StruggleFullness2")
+  SCLibrary.addAggregateValue("STFullness", JA_AggValues)
+
+  JA_AggValues = JArray.object()
+  JArray.addStr(JA_AggValues, "StruggleFullness3")
+  JArray.addStr(JA_AggValues, "StruggleFullness4")
+  SCLibrary.addAggregateValue("WF_SolidTotalFullness", JA_AggValues)
+EndFunction
+
+;/Function setupPerksList()
   Parent.setupPerksList()
 
   ;Intense Hunger **************************************************************
@@ -285,7 +299,7 @@ Function setupPerksList()
   JArray.addStr(JA_Reqs, "Have at least 700 points of energy, a resistance skill of at least 60, and cause an incident at sea.")
 
   SCLibrary.addPerkID("SCV_ThrillingStruggle", JA_Desc, JA_Reqs)
-EndFunction
+EndFunction/;
 
 Function setupMessages()
   Parent.setupMessages()
@@ -777,13 +791,13 @@ String[] Function setupInstalledMods()
   Int JA_ModsChanged = JValue.retain(JArray.objectWithStrings(ModsChanged))
   Int JFD_Items = JDB.solveObj(".SCLItemDatabase")
 ;SCA ---------------------------------------------------------------------------
-  If SCLibrary.isModInstalled("SCA.esp") && !SCVSet.SCA_Initialized
+  ;/If SCLibrary.isModInstalled("SCA.esp") && !SCVSet.SCA_Initialized
     setupSCA(JFD_Items)
     SCVSet.SCA_Initialized = True
   ElseIf !SCLibrary.isModInstalled("SCA.esp") && SCVSet.SCA_Initialized
     removeSCA(JFD_Items)
     SCVSet.SCA_Initialized = False
-  EndIf
+  EndIf/;
 
   ;Size Matters ----------------------------------------------------------------
   If SCLibrary.isModInstalled("GTS.esp") && !SCVSet.SizeMatters_Initialized

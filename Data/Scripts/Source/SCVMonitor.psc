@@ -39,7 +39,7 @@ Event OnQuickUpdate()
     EndIf
   EndIf
 
-  If !Sent && !SCVLib.isOVPred(MyActor, ActorData) && SCVLib.getFrenzyLevel(MyActor) == 0 && (SCVLib.hasStrugglePrey(MyActor, ActorData) || SCVLib.hasPreyType(MyActor, 1, ActorData))
+  If !Sent && !SCVLib.isOVPred(MyActor, ActorData) && SCVLib.getFrenzyLevel(MyActor) == 0 && (SCVLib.hasStrugglePrey(MyActor, ActorData) || SCVLib.hasPreyType(MyActor, 1, ActorData) || SCVLib.hasPreyType(MyActor, 3, ActorData))
     Float ReactChance = Utility.RandomFloat()
     If ReactChance <= 0.01
       Sent = True
@@ -188,6 +188,24 @@ Function Clear()
     MyActor.RemoveSpell(SCVSet.SCV_HasAVStrugglePrey)
   EndIf
   Parent.Clear()
+EndFunction
+
+Function updateFullness()
+  Int JF_Contents = SCVLib.getContents(MyActor, 8, ActorData)
+  ObjectReference ItemKey = JFormMap.nextKey(JF_Contents) as ObjectReference
+  Int JI_StruggleValues = JIntMap.object()
+  While ItemKey
+    Int JM_Item = JFormMap.getObj(JF_Contents, ItemKey)
+    Int StoredType = JMap.getInt(JM_Item, "StoredItemType")
+    JIntMap.setFlt(JI_StruggleValues, StoredType, JIntMap.getFlt(JI_StruggleValues, StoredType) + JMap.getFlt(JM_Item, "DigestValue"))
+    ItemKey = JFormMap.nextKey(JF_Contents, ItemKey) as ObjectReference
+  EndWhile
+  Int i = JIntMap.nextKey(JI_StruggleValues)
+  While i
+    JMap.setFlt(ActorData, "StruggleFullness" + i, JIntMap.getFlt(JI_StruggleValues, i))
+    i = JIntMap.nextKey(JI_StruggleValues, i)
+  EndWhile
+  Parent.updateFullness()
 EndFunction
 
 Function performStruggle(Actor akTarget, Int aiTargetData = 0)

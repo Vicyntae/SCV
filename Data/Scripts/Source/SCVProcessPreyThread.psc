@@ -53,12 +53,19 @@ Function updateStruggle(Actor akTarget, Int aiHigherStruggle = 0, Int aiHigherDa
   Actor i = JFormMap.nextKey(Contents) as Actor
   While i
     Int PreyData = SCVLib.getTargetData(i)
+    Int StruggleAdd
+    Int DamageAdd
     If PreyData
-      TotalPreyStruggle += SCVLib.getTotalPerkLevel(i, "SCV_ThrillingStruggle", PreyData) + 1
-      TotalPreyDamage += SCVLib.getTotalPerkLevel(i, "SCV_CorneredRat", PreyData)
+      StruggleAdd = SCVLib.getTotalPerkLevel(i, "SCV_ThrillingStruggle", PreyData)
+      DamageAdd = SCVLib.getTotalPerkLevel(i, "SCV_CorneredRat", PreyData)
     Else
-      TotalPreyStruggle += 1
+      StruggleAdd = 5
     EndIf
+    If !StruggleAdd
+      StruggleAdd = 5
+    EndIf
+    TotalPreyStruggle += StruggleAdd
+    TotalPreyDamage += DamageAdd
     updateStruggle(i, PredStruggleLevel, PredDamageLevel, PreyData)
     i = JFormMap.nextKey(Contents, i) as Actor
   EndWhile
@@ -80,15 +87,16 @@ Function performStruggle(Actor akTarget, Int aiTargetData = 0)
   Int TargetData = SCVLib.getData(akTarget, aiTargetData)
   Int Struggle = JMap.getInt(TargetData, "SCV_StruggleRank")
   Int Damage = JMap.getInt(TargetData, "SCV_DamageRank")
-  Bool MagicPerk = akTarget.hasSpell(SCVSet.StruggleSorceryPerk)
+  Bool MagicPerk = SCVLib.getCurrentPerkLevel(akTarget, "SCV_StruggleSorcery")
   ;Note(SCVLib.nameGet(akTarget) + " stamina proxy = " + SCVLib.getProxy(akTarget, "Stamina") + "/" + SCVLib.getProxyBase(akTarget, "Stamina") + ", " + SCVLib.getProxyPercent(akTarget, "Stamina"))
   If Struggle
     Float SMod = SCVSet.StruggleMod
     If MagicPerk
+      Float MReduce = 1 - (SCVLib.getTotalPerkLevel(akTarget, "SCV_StruggleSorcery") / 100)
       akTarget.DamageActorValue("Stamina", Struggle* SMod / 2)
-      akTarget.DamageActorValue("Magicka", Struggle* SMod / 2)
+      akTarget.DamageActorValue("Magicka", (Struggle* SMod / 2) * MReduce)
       SCVLib.modProxy(akTarget, "Stamina", -(Struggle * SMod / 2))
-      SCVLib.modProxy(akTarget, "Magicka", -(Struggle * SMod / 2))
+      SCVLib.modProxy(akTarget, "Magicka", -((Struggle * SMod / 2) * MReduce))
     Else
       akTarget.DamageActorValue("Stamina", Struggle * SMod)
       SCVLib.modProxy(akTarget, "Stamina", -(Struggle * SMod))

@@ -19,6 +19,9 @@ Function checkSCVData(Actor akTarget, Int aiTargetData)
       JMap.setInt(aiTargetData, "SCV_Allure", 0)
 
       JMap.setInt(aiTargetData, "SCV_ResLevel", 10)
+      JMap.setInt(aiTargetData, "SCV_Constriction", JMap.getInt(aiTargetData, "SCV_Constriction") + 5)
+      JMap.setInt(aiTargetData, "SCV_ThrillingStruggle", JMap.getInt(aiTargetData, "SCV_ThrillingStruggle") + 5)
+
     Else
       Bool bPred = False
       Bool bOVPred = False
@@ -64,13 +67,9 @@ Function checkSCVData(Actor akTarget, Int aiTargetData)
         EndIf
         If bAVPred
           JMap.setInt(aiTargetData, "SCV_AVLevel", Math.Ceiling((Chance1 + Chance2) / 2))
-          If SCVSet.SCA_Initialized
-            takeUpPerks(akTarget, "SCA_BasementStorage", 3)
-            ;What do we need to add here?
-          Else  ;Give bonus to stomach stats, since prey will be added to stomach array
-            JMap.setFlt(aiTargetData, "STBase", JMap.getFlt(aiTargetData, "STBase") + (Math.pow(2, Chance1 / 10)))
-            JMap.setFlt(aiTargetData, "STDigestionRate", JMap.getFlt(aiTargetData, "STDigestionRate") + (Math.pow(1.3, Chance1 / 11) - 1))
-          EndIf
+          takeUpPerks(akTarget, "WF_BasementStorage", 1)
+          Int PerkPlus = Utility.RandomInt(1, 10)
+          JMap.setInt(aiTargetData, "WF_BasementStorage", JMap.getInt(aiTargetData, "WF_BasementStorage") + PerkPlus)
         EndIf
 
         Int PerkList = Utility.RandomInt(1000000000000, 1999999999999)
@@ -100,6 +99,8 @@ Function checkSCVData(Actor akTarget, Int aiTargetData)
         initializePerk(akTarget, "SCV_FillingMeal", StringUtil.Substring(PerkList, 4, 1) as Int, Chance2)
         initializePerk(akTarget, "SCV_ThrillingStruggle", StringUtil.Substring(PerkList, 5, 1) as Int, Chance2)
       EndIf
+      JMap.setInt(aiTargetData, "SCV_Constriction", JMap.getInt(aiTargetData, "SCV_Constriction") + 5)
+      JMap.setInt(aiTargetData, "SCV_ThrillingStruggle", JMap.getInt(aiTargetData, "SCV_ThrillingStruggle") + 5)
       Int B = Utility.RandomInt(0, 10)
       Int AllureLevel
       If B <= 2
@@ -161,9 +162,8 @@ Function debugMaxPredStats(Actor akTarget)
   takeUpPerks(akTarget, "SCV_Stalker", 3)
   takeUpPerks(akTarget, "SCV_RemoveLimits", 1)
   takeUpPerks(akTarget, "SCV_Constriction", 3)
-  If SCVSet.SCA_Initialized
-    takeUpPerks(akTarget, "SCA_BasementStorage", 5)
-  EndIf
+  takeUpPerks(akTarget, "SCA_BasementStorage", 1)
+  JMap.setInt(TargetData, "WF_BasementStorage", JMap.getInt(TargetData, "WF_BasementStorage") + 30)
   checkPredAbilities(akTarget)
   ;setAggression(akTarget, 5)
 
@@ -311,7 +311,7 @@ Bool Function hasAVStrugglePrey(Actor akPred, Int aiTargetData = 0)
   While ItemKey
     Int JM_Entry = JFormMap.getObj(JF_Contents, ItemKey)
     Int ItemType = JMap.getInt(JM_Entry, "StoredItemType")
-    If ItemType == 4 || ItemType == 6
+    If ItemType == 3 || ItemType == 4
       Return True
     EndIf
     ItemKey = JFormMap.nextKey(JF_Contents, ItemKey)
@@ -322,14 +322,11 @@ EndFunction
 Bool Function hasPrey(Actor akTarget, Int aiTargetData = 0)
   Int TargetData = getData(akTarget, aiTargetData)
   If hasStrugglePrey(akTarget, TargetData) || hasPreyType(akTarget, 1, TargetData) \
-    || hasPreyType(akTarget, 2, TargetData)
+    || hasPreyType(akTarget, 2, TargetData) || hasPreyType(akTarget, 3) || hasPreyType(akTarget, 4)
     ;Add More Prey locations here as they are added.
     Return True
-  ElseIf SCVSet.SCA_Initialized && (hasPreyType(akTarget, 4, TargetData) \
-      || hasPreyType(akTarget, 5, TargetData) || hasPreyType(akTarget, 6, TargetData) \
-      || hasPreyType(akTarget, 7, TargetData))
-    Return True
   EndIf
+  Return False
 EndFunction
 
 Int Function getNumPrey(Actor akTarget, Int aiTargetData = 0)
@@ -337,10 +334,10 @@ Int Function getNumPrey(Actor akTarget, Int aiTargetData = 0)
   Int NumPrey = getNumStrugglePrey(akTarget, TargetData)
   NumPrey += getNumPreyType(akTarget, 1, TargetData)
   NumPrey += getNumPreyType(akTarget, 2, TargetData)
+  NumPrey += getNumPreyType(akTarget, 3, TargetData)
   NumPrey += getNumPreyType(akTarget, 4, TargetData)
-  NumPrey += getNumPreyType(akTarget, 5, TargetData)
-  NumPrey += getNumPreyType(akTarget, 6, TargetData)
-  NumPrey += getNumPreyType(akTarget, 7, TargetData)
+  ;NumPrey += getNumPreyType(akTarget, 6, TargetData)
+  ;NumPrey += getNumPreyType(akTarget, 7, TargetData)
 
   ;Add more prey functions here.
   Return NumPrey
@@ -1062,7 +1059,7 @@ Function transferInventory(Actor akTarget, Actor akSource, Int aiType)
 	akSource.RemoveAllItems(ST_TransferRef, False, True)	;See SCVTransferObject Script for remaining procedure
 EndFunction
 
-Function transferSCLItems(Actor akTarget, Actor akSource, Int aiType)
+Function transferSCLItems(Actor akTarget, Actor akSource, Int aiType, Int aiStorageType)
   {Moves items stored in actor to target NEED TO WRITE}
   Int JF_Target = getContents(akSource, aiType)
 
@@ -1072,19 +1069,36 @@ Function transferSCLItems(Actor akTarget, Actor akSource, Int aiType)
     Form ItemKey = JFormMap.nextKey(JF_Source)
     While ItemKey
       If aiType == 1  ;Autosort into digest/nondigest
-        If ItemKey as Actor
-          insertPrey(akTarget, ItemKey as Actor, 1, False, False)
-        ElseIf (ItemKey as Potion || ItemKey as Ingredient) && isDigestible(ItemKey)
-          akTarget.EquipItem(ItemKey, False, False)
-        Else
-          addItem(akTarget, ItemKey as ObjectReference, ItemKey, 2)
+        If aiStorageType == 2
+          If ItemKey as Actor
+            insertPrey(akTarget, ItemKey as Actor, 1, False, False)
+          ElseIf (ItemKey as Potion || ItemKey as Ingredient) && isDigestible(ItemKey)
+            akTarget.EquipItem(ItemKey, False, False)
+          Else
+            addItem(akTarget, ItemKey as ObjectReference, ItemKey, 2)
+          EndIf
+        ElseIf aiStorageType == 4
+          If ItemKey as Actor
+            insertPrey(akTarget, ItemKey as Actor, 3, False, False)
+          Else
+            addItem(akTarget, ItemKey as ObjectReference, ItemKey, 4)
+          EndIf
         EndIf
       ElseIf aiType == 2  ;Store everything
-        If ItemKey as Actor
-          insertPrey(akTarget, ItemKey as Actor, 2, False, False)
-        Else
-          addItem(akTarget, ItemKey as ObjectReference, ItemKey, 2)
+        If aiStorageType == 2
+          If ItemKey as Actor
+            insertPrey(akTarget, ItemKey as Actor, 2, False, False)
+          Else
+            addItem(akTarget, ItemKey as ObjectReference, ItemKey, 2)
+          EndIf
+        ElseIf aiStorageType == 4
+          If ItemKey as Actor
+            insertPrey(akTarget, ItemKey as Actor, 4, False, False)
+          Else
+            addItem(akTarget, ItemKey as ObjectReference, ItemKey, 4)
+          EndIf
         EndIf
+
       ;ElseIf aiType == 4  ;Whatever
       EndIf
       ItemKey = JFormMap.nextKey(JF_Source, ItemKey)
@@ -1127,7 +1141,7 @@ Float Function genDigestValue(Form akItem, Bool abMod1 = False, Bool abMod2 = Fa
   		EndIf
 
       Int FillingPerkRank = getTotalPerkLevel(akTarget, "SCV_FillingMeal")
-      DigestValue *= (1 + (0.2 * FillingPerkRank))
+      DigestValue *= (1 + (FillingPerkRank/100))
 
       If abMod1
         DigestValue += akTarget.GetTotalItemWeight()	;All of the Actor's inventory
@@ -1146,7 +1160,7 @@ Float Function genDigestValue(Form akItem, Bool abMod1 = False, Bool abMod2 = Fa
   		EndIf
 
       Int FillingPerkRank = getTotalPerkLevel(akTarget, "SCV_FillingMeal")
-      DigestValue *= (1 + (0.2 * FillingPerkRank))
+      DigestValue *= (1 + (FillingPerkRank/100))
 
       If abMod1
         DigestValue += akTarget.GetTotalItemWeight()	;All of the Actor's inventory
@@ -1369,7 +1383,7 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
         Else
           PlayerThoughtDB(nextPred, "SCVOVPredStruggleFinished")
         EndIf
-      ElseIf StoredType == 4 || StoredType == 6
+      ElseIf StoredType == 3 || StoredType == 4
         If !hasAVStrugglePrey(PlayerRef)
           PlayerThoughtDB(nextPred, "SCVAVPredAllStruggleFinished")
         Else
@@ -1385,17 +1399,17 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
     EndIf
 
     Int iModType = StoredType
-    If !SCVSet.SCA_Initialized || SCVSet.AVDestinationChoice == 1
-      If StoredType == 4 || StoredType == 5
+    If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
+      If StoredType == 3 ;|| StoredType == 5
         iModType = 1
-      ElseIf StoredType == 6 || StoredType == 7
+      ElseIf StoredType == 4 ;|| StoredType == 7
         iModType = 2
       EndIf
     EndIf
 
     If StoredType == 1 || StoredType == 2
       nextPred.Say(SCVSet.SCV_BurpSound)
-    ElseIf StoredType == 4 || StoredType == 6
+    ElseIf StoredType == 3 || StoredType == 4
       nextPred.Say(SCVSet.SCV_AFinishSound)
     EndIf
     Float DigestValue = genDigestValue(akTarget, True)
@@ -1408,21 +1422,21 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
     JMap.setInt(nextPredData, "SCV_NumPreyEaten", JMap.getInt(nextPredData, "SCV_NumPreyEaten") + 1)
     If StoredType == 1 || StoredType == 2
       JMap.setInt(nextPredData, "SCV_NumOVPreyEaten", JMap.getInt(nextPredData, "SCV_NumOVPreyEaten") + 1)
-    ElseIf StoredType == 4 || StoredType == 6
+    ElseIf StoredType == 3 || StoredType == 4
       JMap.setInt(nextPredData, "SCV_NumAVPreyEaten", JMap.getInt(nextPredData, "SCV_NumAVPreyEaten") + 1)
-    ElseIf StoredType == 5 || StoredType == 7
-      JMap.setInt(nextPredData, "SCV_NumPVPreyEaten", JMap.getInt(nextPredData, "SCV_NumPVPreyEaten") + 1)
+    ;/ElseIf StoredType == 5 || StoredType == 7
+      JMap.setInt(nextPredData, "SCV_NumPVPreyEaten", JMap.getInt(nextPredData, "SCV_NumPVPreyEaten") + 1)/;
     ;ElseIf StoredType == 3 || StoredType == 4 Or whatever
       ;Record Prey eaten.
     EndIf
     Race PreyRace = akTarget.GetRace()
     Int StorageType
     If iModType == 1 || iModType == 2
-      StorageType == 2
-    ElseIf iModType == 4 || iModType == 6
-      StorageType == 4
-    ElseIf iModType == 5 || iModType == 7
-      StorageType == 5
+      StorageType = 2
+    ElseIf iModType == 3 || iModType == 4
+      StorageType = 4
+    ;/ElseIf iModType == 5 || iModType == 7
+      StorageType == 5/;
     EndIf
 
     If PreyRace.HasKeyword(SCVSet.ActorTypeNPC)
@@ -1472,21 +1486,19 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
     sendStruggleFinishEvent(nextPred, akTarget, StoredType)
     If StoredType == 1 || StoredType == 2
       giveOVExp(nextPred, genDigestValue(akTarget) as Int)
-    ElseIf StoredType == 4 || StoredType == 6
+    ElseIf StoredType == 3 || StoredType == 4
       giveAVExp(nextPred, genDigestValue(akTarget) as Int)
-    ElseIf StoredType == 5 || StoredType == 7
-      givePVExp(nextPred, genDigestValue(akTarget) as Int)
+    ;/ElseIf StoredType == 5 || StoredType == 7
+      givePVExp(nextPred, genDigestValue(akTarget) as Int)/;
     ;ElseIf StoredType == ?
     EndIf
   Else
-    If hasPrey(akTarget)
-      Notice("No Pred detected. Vomiting all prey.")
+    Notice("No Pred detected. Removing all prey.")
+    If hasOVStrugglePrey(akTarget, TargetData)
       vomitAll(akTarget, RemoveEverything = True)
-      If SCVSet.SCA_Initialized
-        SCALibrary SCALib = SCALibrary.getSCALibrary()
-        SCALib.Defecate(akTarget)
-        SCALib.Urinate(akTarget)
-      EndIf
+    EndIf
+    If hasAVStrugglePrey(akTarget, TargetData)
+      WF_SolidRemove(akTarget)
     EndIf
   EndIf
   quickUpdate(akTarget, True)
@@ -1815,297 +1827,6 @@ Form Function findGemFragment(Actor akTarget, Int aiItemType, Int aiTargetData =
 EndFunction
 
 ;Perk Functions ****************************************************************
-Spell[] Function getAbilityArray(String asPerkID)
-  If asPerkID == "SCV_IntenseHunger"
-    Return SCVSet.SCV_IntenseHungerAbilityArray
-  ElseIf asPerkID == "SCV_MetalMuncher"
-    Return SCVSet.SCV_MetalMuncherAbilityArray
-  ElseIf asPerkID == "SCV_FollowerofNamira"
-    Return SCVSet.SCV_FollowerofNamiraAbilityArray
-  ElseIf asPerkID == "SCV_DragonDevourer"
-    Return SCVSet.SCV_DragonDevourerAbilityArray
-  ElseIf asPerkID == "SCV_SpiritSwallower"
-    Return SCVSet.SCV_SpiritSwallowerAbilityArray
-  ElseIf asPerkID == "SCV_ExpiredEpicurian"
-    Return SCVSet.SCV_ExpiredEpicurianAbilityArray
-  ElseIf asPerkID == "SCV_DaedraDieter"
-    Return SCVSet.SCV_DaedraDieterAbilityArray
-  ElseIf asPerkID == "SCV_Acid"
-    Return SCVSet.SCV_AcidAbilityArray
-  ElseIf asPerkID == "SCV_Stalker"
-    Return SCVSet.SCV_StalkerAbilityArray
-  ElseIf asPerkID == "SCV_RemoveLimits"
-    Return SCVSet.SCV_RemoveLimitsAbilityArray
-  ElseIf asPerkID == "SCV_Constriction"
-    Return SCVSet.SCV_ConstrictionAbilityArray
-  ElseIf asPerkID == "SCV_Nourish"
-    Return SCVSet.SCV_NourishAbilityArray
-  ElseIf asPerkID == "SCV_PitOfSouls"
-    Return SCVSet.SCV_PitOfSoulsAbilityArray
-  ElseIf asPerkID == "SCV_StrokeOfLuck"
-    Return SCVSet.SCV_StrokeOfLuckAbilityArray
-  ElseIf asPerkID == "SCV_ExpectPushback"
-    Return SCVSet.SCV_ExpectPushbackAbilityArray
-  ElseIf asPerkID == "SCV_CorneredRat"
-    Return SCVSet.SCV_CorneredRatAbilityArray
-  ElseIf asPerkID == "SCV_FillingMeal"
-    Return SCVSet.SCV_FillingMealAbilityArray
-  ElseIf asPerkID == "SCV_ThrillingStruggle"
-    Return SCVSet.SCV_ThrillingStruggleAbilityArray
-  ElseIf asPerkID == "SCV_PredLevel"
-    Return SCVSet.SCV_PredLevelAbilityArray
-  Else
-    Return Parent.getAbilityArray(asPerkID)
-  EndIf
-EndFunction
-
-Bool Function canTakePerk(Actor akTarget, String asPerkID, Bool abOverride = False, Int aiTargetData = 0)
-  Int TargetData = getData(akTarget, aiTargetData)
-  Int PerkLevel = getCurrentPerkLevel(akTarget, asPerkID)
-  If abOverride && PerkLevel < getAbilityArray(asPerkID).Length - 1
-    Return True
-  ElseIf asPerkID == "SCV_IntenseHunger"
-    If isOVPred(akTarget, TargetData)
-      Int aiPerkLevel = PerkLevel + 1
-      Int Req1
-      Int Req2
-      If aiPerkLevel == 1
-        Req1 = 10
-        Req2 = 15
-      ElseIf aiPerkLevel == 2
-        Req1 = 60
-        Req2 = 35
-      ElseIf aiPerkLevel == 3
-        Req1 = 150
-        Req2 = 60
-      EndIf
-      Int OVLevel = getOVLevelTotal(akTarget, TargetData)
-      Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumOVPreyEaten")
-      If aiPerkLevel <= 3 && NumEatenPrey >= Req2 && OVLevel >= Req2
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_MetalMuncher"
-    If isPred(akTarget)
-      Int aiPerkLevel = PerkLevel + 1
-      Float DigestRate = JMap.getFlt(TargetData, "STDigestionRate")
-      Int Level = akTarget.GetLevel()
-      Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumDwarvenEaten")
-      If aiPerkLevel == 1 && DigestRate >= 2 && Level >= 15 && PlayerRef.HasSpell(SCVSet.MS04Reward) ;Complete quest Unfathomable Depths
-        Return True
-      ElseIf aiPerkLevel == 2 && DigestRate >= 5 && Level >= 25 && NumEatenPrey >= 30 && SCVSet.MG06.GetStage() == 200 ;Complete Quest Revealing the Unseen
-        Return True
-      ElseIf aiPerkLevel == 3 && DigestRate >= 8 && Level >= 30 && NumEatenPrey >= 60 && (SCVSet.DA04.GetStage() == 100 || SCVSet.DA04.GetStage() == 105)  ;Complete (or fail) Quest Discerning the Transmundane
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_FollowerofNamira"
-    If isPred(akTarget)
-      Int aiPerkLevel = PerkLevel + 1
-      Float Health = akTarget.GetBaseActorValue("Health")
-      Int Level = akTarget.GetLevel()
-      Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumHumansEaten")
-      If aiPerkLevel == 1 && Health >= 150 && Level >= 5 && (SCVSet.DA11Intro.GetStage() == 20 || SCVSet.DA11Intro.GetStage() == 200) ;Complete Quest Investigate the Hall of The Dead
-        Return True
-      ElseIf aiPerkLevel == 2 && Health >= 250 && Level >= 10 && NumEatenPrey >= 30 && (SCVSet.DA05.GetStage() == 100 || SCVSet.DA05.GetStage() == 105 || SCVSet.DA05.GetStage() == 205 || SCVSet.C03.GetStage() == 200) ;Complete (or fail) Quest Ill Met By Moonlight || The Silver Hand
-        Return True
-      ElseIf aiPerkLevel == 3 && Health >= 350 && Level >= 30 && NumEatenPrey >= 100 && JMap.getInt(TargetData, "SCV_ImportantNPCsEaten") >= 10
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_DragonDevourer"
-    If isPred(akTarget)
-      Int aiPerkLevel = PerkLevel + 1
-      Int DragonsKilled = SCVSet.DragonsAbsorbed.GetValueInt()
-      Int CurrentDragonSouls = JMap.getInt(getTargetData(PlayerRef), "SCV_DragonGemsConsumed")
-      Int Level = akTarget.GetLevel()
-      Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumDragonsEaten")
-      If aiPerkLevel == 1 && DragonsKilled >= 30 && Level >= 30 && SCVSet.MQ203.GetStage() == 280 ;Complete Quest Alduin's Wall
-        Return True
-      ElseIf aiPerkLevel == 2 && DragonsKilled >= 70 && Level >= 50 && NumEatenPrey >= 20 && SCVSet.MQ305.GetStage() == 200 ;Complete Quest Dragonslayer
-        Return True
-      ElseIf aiPerkLevel == 3 && DragonsKilled >= 100 && Level >= 70 && NumEatenPrey >= 100 && CurrentDragonSouls >= 10
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_SpiritSwallower"
-    If isPred(akTarget)
-      Int aiPerkLevel = PerkLevel + 1
-      Float Magicka = akTarget.GetBaseActorValue("Magicka")
-      Int Level = akTarget.GetLevel()
-      Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumGhostsEaten")
-      If aiPerkLevel == 1 && Magicka >= 150 && Level >= 5 && SCVSet.FreeformIvarstead01.GetStage() == 200 ;Complete Quest Lifting the Shroud.
-        Return True
-      ElseIf aiPerkLevel == 2 && Magicka >= 200 && Level >= 10 && NumEatenPrey >= 5 && SCVSet.MG07.GetStage() == 200 ;Complete The Staff of Magnus
-        Return True
-      ElseIf aiPerkLevel == 3 && Magicka >= 300 && Level >= 15 && NumEatenPrey >= 15 && SCVSet.MS06.GetStage() == 250  ;Complete The Wolf Queen Awakened.
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_ExpiredEpicurian"
-    If isPred(akTarget)
-      Int aiPerkLevel = PerkLevel + 1
-      Float Stamina = akTarget.GetBaseActorValue("Stamina")
-      Int Level = akTarget.GetLevel()
-      Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumUndeadEaten")
-      If aiPerkLevel == 1 && Stamina >= 150 && Level >= 5 && SCVSet.dunAnsilvundQST.GetStage() == 100 ;Complete Ansilvund
-        Return True
-      ElseIf aiPerkLevel == 2 && Stamina >= 200 && Level >= 10 && NumEatenPrey >= 25 && SCVSet.dunGualdursonQST.GetStage() == 225 ;Complete Forbidden Legend
-        Return True
-      ElseIf aiPerkLevel == 3 && Stamina >= 300 && Level >= 15 && NumEatenPrey >= 15 && PlayerRef.HasMagicEffect(SCVSet.EnchDragonPriestUltraMaskEffect)  ;Obtain Konahrik
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_DaedraDieter"
-    If isPred(akTarget)
-      Int aiPerkLevel = PerkLevel + 1
-      Float Conjure = akTarget.GetActorValue("Conjuration")
-      Int Level = akTarget.GetLevel()
-      Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumDaedraEaten")
-      If aiPerkLevel == 1 && Conjure >= 25 && Level >= 10 && (SCVSet.DA01.GetStage() == 100 || SCVSet.DA01.GetStage() == 110 || SCVSet.DA01.GetStage() == 250);Complete The Black Star
-        Return True
-      ElseIf aiPerkLevel == 2 && Conjure >= 40 && Level >= 20 && NumEatenPrey >= 20 && (SCVSet.DA10.GetStage() == 200 || SCVSet.DA10.GetStage() == 500 || SCVSet.DA10.GetStage() == 550);Complete The House of Horrors
-        Return True
-      ElseIf aiPerkLevel == 3 && Conjure >= 60 && Level >= 30 && NumEatenPrey >= 50 && (SCVSet.DA07.GetStage() == 100 || SCVSet.DA07.GetStage() == 150 || SCVSet.DA07.GetStage() == 200) ;Complete Pieces of the Past
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_Acid"
-    If isPred(akTarget)
-      Int aiPerkLevel = PerkLevel + 1
-      Float DigestRate = JMap.getFlt(TargetData, "STDigestionRate")
-      Float NumFoodEaten = JMap.getFlt(TargetData, "STTotalDigestedFood")
-      Float Req1
-      Float Req2
-      If aiPerkLevel == 1
-        Req1 = 4
-        Req2 = 350
-      ElseIf aiPerkLevel == 2
-        Req1 = 10
-        Req2 = 700
-      ElseIf aiPerkLevel == 3
-        Req1 = 20
-        Req2 = 1200
-      EndIf
-      If aiPerkLevel <= 3 && DigestRate >= Req1 && NumFoodEaten >= Req2
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_Stalker"
-    If isPred(akTarget)
-      Int aiPerkLevel = PerkLevel + 1
-      Float Sneak = akTarget.GetActorValue("Sneak")
-      Int Level = akTarget.GetLevel()
-      If aiPerkLevel == 1 && PlayerRef.HasPerk(SCVSet.QuietCasting) && Sneak >= 25 && Level >= 10
-        Return True
-      ElseIf aiPerkLevel == 2 && Sneak >= 50 && Level >= 25 && SCVSet.TG08A.GetStage() == 200 ;Complete Trinity Restored
-        Return True
-      ElseIf aiPerkLevel == 3 && Sneak >= 75 && Level >= 35 && SCVSet.DB11.GetStage() == 200 ;Complete Hail Sithis!
-        Return True
-      EndIf
-    EndIf
-  ElseIf asPerkID == "SCV_RemoveLimits"
-    Return False
-    ;/Int aiPerkLevel = PerkLevel + 1
-    If aiPerkLevel <= 3 && (isOVPred(akTarget) || abOverride)
-      Return True
-    EndIf/;
-  ElseIf asPerkID == "SCV_Constriction"
-    Int aiPerkLevel = PerkLevel + 1
-    Int ArmorLevel = akTarget.GetActorValue("HeavyArmor") as Int
-    Int Stamina = akTarget.GetActorValue("Stamina") as Int
-    If aiPerkLevel == 1 && ArmorLevel >= 20 && Stamina >= 200 && SCVSet.dunTrevasWatchQST.GetStage() == 100 ;Complete Infiltration
-      Return True
-    ElseIf aiPerkLevel == 2 && ArmorLevel >= 40 && Stamina >= 300 && SCVSet.dunIronbindQST.GetStage() == 200  ;Complete Coming of Age at Ironbind Barrow
-      Return True
-    ElseIf aiPerkLevel == 3 && ArmorLevel >= 60 && Stamina >= 400 && SCVSet.dunMistwatchQST.GetStage() == 100
-      Return True
-    EndIf
-    ;Others must be found in skill books
-    ;The Serpent Stone
-    ;Serpent's Bluff Redoubt
-  ElseIf asPerkID == "SCV_Nourish"
-    Int aiPerkLevel = PerkLevel + 1
-    Int ArmorLevel = akTarget.GetActorValue("LightArmor") as Int
-    Int Magicka = akTarget.GetActorValue("Magicka") as Int
-    If aiPerkLevel == 1 && ArmorLevel >= 20 && Magicka >= 200 && SCVSet.MS14Quest.GetStage() == 200  ;Complete Laid to Rest
-      Return True
-    ElseIf aiPerkLevel == 2 && ArmorLevel >= 40 && Magicka >= 300 && SCVSet.Favor109.GetStage() == 20  ;Complete Kill the Vampire
-      Return True
-    ElseIf aiPerkLevel == 3 && ArmorLevel >= 60 && Magicka >= 400 && SCVSet.FreeformFalkreathQuest03B.GetStage() == 200  ;Complete Dark Ancestor
-      Return True
-    EndIf
-    ;Somewhere in the jarl's palaces or a rich person's house.
-  ElseIf asPerkID == "SCV_PitOfSouls"
-    Int aiPerkLevel = PerkLevel + 1
-    Int Enchant = akTarget.GetActorValue("Enchanting") as Int
-    Int SpiritLevel = getCurrentPerkLevel(akTarget, "SCV_SpiritSwallower")
-    Int Level = akTarget.GetLevel()
-    Int NumSoulsCaptured = JMap.getInt(TargetData, "SCV_SoulsCaptured")
-    If aiPerkLevel == 1 && Enchant >= 30 && SpiritLevel >= 1 && Level >= 15 && PlayerRef.hasPerk(SCVSet.SoulSqueezer)
-      Return True
-    ElseIf aiPerkLevel == 2 && Enchant >= 55 && SpiritLevel >= 2 && Level >= 30 && NumSoulsCaptured >= 30 && SCVSet.MGRArniel04.GetStage() == 200 ;Complete Arniel's Endeavor
-      Return True
-    ElseIf aiPerkLevel == 3 && Enchant >= 90 && Level >= 50 && NumSoulsCaptured >= 70 && SCVSet.MGRitual03.GetStage() == 200  ;Complete Conjuration Ritual Spell
-      Return True
-    EndIf
-  ElseIf asPerkID == "SCV_StrokeOfLuck"
-    Int aiPerkLevel = PerkLevel + 1
-    Int Lockpicking = akTarget.GetActorValue("Lockpicking") as Int
-    If aiPerkLevel == 1 && JMap.getInt(TargetData, "SCV_StrokeOfLuckAvoidVore") >= 5 && Lockpicking >= 25
-      Return True
-    ElseIf aiPerkLevel == 2 && JMap.getInt(TargetData, "SCV_StrokeOfLuckActivate") >= 5 && Lockpicking >= 55 && PlayerRef.HasPerk(SCVSet.GoldenTouch)
-      Return True
-    ElseIf aiPerkLevel == 3 && JMap.getInt(TargetData, "SCV_StrokeOfLuckActivate") >= 20 && Lockpicking >= 80 && SCVSet.TG09.GetStage() == 200  ;Complete Darkness Returns
-      Return True
-    EndIf
-  ElseIf asPerkID == "SCV_ExpectPushback"
-    Int Level = akTarget.GetLevel()
-    Int aiPerkLevel = PerkLevel + 1
-    If aiPerkLevel == 1 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce1) && Level >= 7 && SCVSet.FreeformRiften19.GetStage() == 20  ;Complete Bloody Nose
-      Return True
-    ElseIf aiPerkLevel == 2 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce2) && Level >= 15 && SCVSet.FreeformRiften09.GetStage() == 200 ;Complete Grimsever's Return
-      Return True
-    ElseIf aiPerkLevel == 2 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce3) && Level >= 25 && SCVSet.MQ204.GetStage() == 200 ;Complete The Throat of the World
-    EndIf
-  ElseIf asPerkID == "SCV_CorneredRat"
-    Int aiPerkLevel = PerkLevel + 1
-    If aiPerkLevel == 1 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 1 && SCVSet.MQ202.GetStage() == 180  ;Complete A Cornered Rat
-      Return True
-    ElseIf aiPerkLevel == 2 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 5 && SCVSet.MG08.GetStage() == 200 ;Complete The Eye of Magnus
-      Return True
-    ElseIf aiPerkLevel == 3 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 15 && SCVSet.MQ301.GetStage() == 220 ; Complete The Fallen
-      Return True
-    EndIf
-  ElseIf asPerkID == "SCV_FillingMeal"
-    Int aiPerkLevel = PerkLevel + 1
-    Float DigestValue = genDigestValue(akTarget, True)
-    Int Level = akTarget.GetLevel()
-    Int Resist = getResLevel(akTarget, TargetData)
-    If aiPerkLevel == 1 && DigestValue >= 300 && Level >= 15
-      Return True
-    ElseIf aiPerkLevel == 2 && DigestValue >= 500 && Resist >= 30 && Level >= 25
-      Return True
-    ElseIf aiPerkLevel == 3 && DigestValue >= 800 && Resist >= 50 && Level >= 35
-      Return True
-    EndIf
-  ElseIf asPerkID == "SCV_ThrillingStruggle"
-    Int aiPerkLevel = PerkLevel + 1
-    Int Resist = getResLevel(akTarget, TargetData)
-    Float Energy = akTarget.GetBaseActorValue("Stamina") + akTarget.GetBaseActorValue("Magicka")
-    If aiPerkLevel == 1 && Energy >= 250 && Resist >= 20
-      Return True
-    ElseIf aiPerkLevel == 1 && Energy >= 350 && Resist >= 40 && (SCVSet.MS02.GetStage() == 100 || SCVSet.MS02.GetStage() == 250)  ;Complete No One Escapes Cidhna Mine
-      Return True
-    ElseIf aiPerkLevel == 3 && Energy >= 700 && Resist >= 60 && SCVSet.MS07.GetStage() == 250 ;Complete Lights Out!
-      Return True
-    EndIf
-  Else
-    Return Parent.canTakePerk(akTarget, asPerkID, abOverride, TargetData)
-  EndIf
-EndFunction
-
-
 ;/Perk List
 SCV_IntenseHunger
 SCV_MetalMuncher
@@ -2129,7 +1850,6 @@ SCV_FillingMeal
 SCV_ThrillingStruggle/;
 
 ;Menu Functions ***************************************************************
-;If this works right, its the only one we actually need.
 Bool Function buildActorStatsMenu(Actor akTarget)
   If !Parent.buildActorStatsMenu(akTarget)
     Return False
@@ -2170,7 +1890,7 @@ Bool Function buildActorStatsMenu(Actor akTarget)
     LM_ST_Stats.AddEntryItem("Extra Anal Vore Level = " + getAVLevelExtra(akTarget, TargetData))
     JArray.addStr(JA_Description, TargetName + "'s acquired anal vore skill.")
 
-    LM_ST_Stats.AddEntryItem("Oral Vore EXP = " + getAVEXP(akTarget, TargetData) + "/" + getAVEXPThreshold(getAVLevel(akTarget, TargetData)))
+    LM_ST_Stats.AddEntryItem("Anal Vore EXP = " + getAVEXP(akTarget, TargetData) + "/" + getAVEXPThreshold(getAVLevel(akTarget, TargetData)))
     JArray.addStr(JA_Description, TargetName + "'s anal vore experience.")
 
     LM_ST_Stats.AddEntryItem("")
@@ -2256,7 +1976,15 @@ Function handleActorMainMenu(Actor akTarget, Int aiOption, Int aiMode)
       showContentsList(akTarget)
     EndIf
   ElseIf aiOption == 7
-    openTransferMenu(akTarget)
+    Int Option = 1
+    If SCLSet.WF_Active
+      Option = SCLSet.SCL_MES_WF_StorageChoice.Show()
+    EndIf
+    If Option == 1
+      openTransferMenu(akTarget)
+    ElseIf Option == 2
+      openTransferMenu(akTarget, "Colon")
+    EndIf
   EndIf
 EndFunction
 

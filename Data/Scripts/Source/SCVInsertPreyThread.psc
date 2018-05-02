@@ -88,7 +88,7 @@ Event OnInsertPreyCall(Int aiID)
         Else
           PlayerThoughtDB(Pred, "SCVPredSwallow")
         EndIf
-      ElseIf ItemType == 4 || ItemType == 6
+      ElseIf ItemType == 3 || ItemType == 4
         PlayerThoughtDB(Pred, "SCVPredTakeIn")
       EndIf
     EndIf
@@ -97,17 +97,17 @@ Event OnInsertPreyCall(Int aiID)
       PlayerThoughtDB(Prey, "SCVPreySwallowed")
       Debug.Notification(nameGet(Pred) + " is eating " + nameGet(Prey) + "!")
       Pred.Say(SCVSet.SCV_SwallowSound)
-    ElseIf ItemType == 4 || ItemType == 6
+    ElseIf ItemType == 3 || ItemType == 4
       PlayerThoughtDB(Prey, "SCVPreyTakenIn")
       Debug.Notification(nameGet(Pred) + " is taking in " + nameGet(Prey) + "!")
       Pred.Say(SCVSet.SCV_TakeInSound)
     EndIf
 
     Int iModType = ItemType
-    If !SCVSet.SCA_Initialized || SCVSet.AVDestinationChoice == 1
-      If ItemType == 4 || ItemType == 5
+    If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
+      If ItemType == 3 ;|| ItemType == 5
         iModType = 1
-      ElseIf ItemType == 6 || ItemType == 7
+      ElseIf ItemType == 4 ;|| ItemType == 7
         iModType == 2
       EndIf
     EndIf
@@ -132,63 +132,27 @@ Event OnInsertPreyCall(Int aiID)
 
     If Prey.isDead() || Friendly || Prey.IsUnconscious()
       ;Notice("Prey is willing or incapacitated. Inserting directly into contents.")
-      If ItemType == 1 || ItemType == 2
-        If Prey == PlayerRef
-          JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType, abMoveNow = False)
-          SCVSet.SCV_FollowPred.ForceRefTo(Pred)
-        Else
-          JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType)
-        EndIf
-      ElseIf ItemType == 4 || ItemType == 6
-        If !SCVSet.SCA_Initialized || SCVSet.AVDestinationChoice == 1
-          If Prey == PlayerRef
-            JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType, abMoveNow = False)
-            SCVSet.SCV_FollowPred.ForceRefTo(Pred)
-          Else
-            JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType)
-          EndIf
-        Else
-          If Prey == PlayerRef
-            JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType, afDigestValueOverRide = 0, abMoveNow = False)
-            SCVSet.SCV_FollowPred.ForceRefTo(Pred)
-          Else
-            JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType, afDigestValueOverRide = 0)
-          EndIf
-          JMap.setFlt(JM_PreyEntry, "StoredDigestValue", SCVLib.genDigestValue(Prey, True))
-        EndIf
+      If Prey == PlayerRef
+        JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType, abMoveNow = False)
+        SCVSet.SCV_FollowPred.ForceRefTo(Pred)
+      Else
+        JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType)
       EndIf
     Else
       ;Notice("Prey is struggling. Inserting into struggle contents")
+      If Prey == PlayerRef
+        JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8, abMoveNow = False)
+        SCVSet.SCV_FollowPred.ForceRefTo(Pred)
+      Else
+        JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8)
+      EndIf
       If ItemType == 1 || ItemType == 2
-        If Prey == PlayerRef
-          JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8, abMoveNow = False)
-          SCVSet.SCV_FollowPred.ForceRefTo(Pred)
-        Else
-          JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8)
-        EndIf
         SCVLib.giveOVExp(Pred, SCVLib.getResLevel(Prey))
-      ElseIf ItemType == 4 || ItemType == 6
-        If !SCVSet.SCA_Initialized || SCVSet.AVDestinationChoice == 1
-          If Prey == PlayerRef
-            JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8, abMoveNow = False)
-            SCVSet.SCV_FollowPred.ForceRefTo(Pred)
-          Else
-            JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8)
-          EndIf
-        Else
-          If Prey == PlayerRef
-            JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8, afDigestValueOverRide = 0, abMoveNow = False)
-            SCVSet.SCV_FollowPred.ForceRefTo(Pred)
-          Else
-            JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8, afDigestValueOverRide = 0)
-          EndIf
-          JMap.setFlt(JM_PreyEntry, "StoredDigestValue", SCVLib.genDigestValue(Prey, True))
-        EndIf
-
+      ElseIf ItemType == 3 || ItemType == 4
         SCVLib.giveAVExp(Pred, SCVLib.getResLevel(Prey))
+      EndIf
       ;/ElseIf ItemType == 5 || ItemType == 7
         givePVEXP(Pred, getResLevel(Prey))/;
-      EndIf
     EndIf
 
     JMap.setInt(PreyData, "SCV_NumTimesEaten", JMap.getInt(PreyData, "SCV_NumTimesEaten") + 1)

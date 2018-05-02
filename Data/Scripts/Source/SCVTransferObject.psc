@@ -23,10 +23,10 @@ Actor Property TransferTarget
 EndProperty
 Int Property Type
   Function Set(Int a_val)
-    If !SCVLib.SCVSet.SCA_Initialized || SCVLib.SCVSet.AVDestinationChoice == 1
-      If a_val == 4 || a_val == 5
+    If !SCVLib.SCLSet.WF_Active || SCVLib.SCVSet.AVDestinationChoice == 1
+      If a_val == 3 ;|| a_val == 5
         a_val == 1
-      ElseIf a_val == 6 || a_val == 7
+      ElseIf a_val == 4 ;|| a_val == 7
         a_val == 2
       EndIf
     EndIf
@@ -42,35 +42,51 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
     If !akItemReference
       RemoveItem(akBaseItem, aiItemCount, True)
     EndIf
-  ElseIf InsertType == 2  ;Separate everything based on primary type and digestability (1,2 for stomach, 4,5 for anus)
-    Int CurrentType ;Rewrite this once we differetiate anal and oral vore
-    If (akBaseItem as Potion || akBaseItem as Ingredient) && SCVLib.isDigestible(akBaseItem)
-      CurrentType = 1
-    Else
-      CurrentType = 2
-    EndIf
-    String ItemName = SCVLib.nameGet(akBaseItem)  ;For some reason a "Null" Item keeps being added without any name, and doesn't show up when vomited
-    If !ItemName
-      Return
-    EndIf
-    ;Note("Item Added! Form = " + ItemName + ", ItemType = " + CurrentType + ", NumItems = " + aiItemCount)
-    While aiItemCount
-      If CurrentType == 1
-        If akItemReference
-          RemoveItem(akItemReference, 1, False, TargetActor)
-          TargetActor.EquipItem(akItemReference, False, False)
-        Else
-          RemoveItem(akBaseItem, 1, False, TargetActor)
-          TargetActor.EquipItem(akBaseItem, False, False)
+  ElseIf InsertType == 2  ;Separate everything based on primary type and digestability (1,2 for stomach, 3,4 for anus)
+    If ItemType == 1 || ItemType == 2
+      Int CurrentType ;Rewrite this once we differetiate anal and oral vore
+      If (akBaseItem as Potion || akBaseItem as Ingredient) && SCVLib.isDigestible(akBaseItem)
+        CurrentType = 1
+      Else
+        CurrentType = 2
+      EndIf
+      String ItemName = SCVLib.nameGet(akBaseItem)  ;For some reason a "Null" Item keeps being added without any name, and doesn't show up when vomited
+      If !ItemName
+        Return
+      EndIf
+      ;Note("Item Added! Form = " + ItemName + ", ItemType = " + CurrentType + ", NumItems = " + aiItemCount)
+      While aiItemCount
+        If CurrentType == 1
+          If akItemReference
+            RemoveItem(akItemReference, 1, False, TargetActor)
+            TargetActor.EquipItem(akItemReference, False, False)
+          Else
+            RemoveItem(akBaseItem, 1, False, TargetActor)
+            TargetActor.EquipItem(akBaseItem, False, False)
+          EndIf
+        ElseIf CurrentType == 2
+          SCVLib.addItem(TargetActor, akItemReference, akBaseItem, 2)
+          If !akItemReference
+            RemoveItem(akBaseItem, 1, False)
+          EndIf
         EndIf
-      ElseIf CurrentType == 2
-        SCVLib.addItem(TargetActor, akItemReference, akBaseItem, 2)
+        aiItemCount -= 1
+      EndWhile
+    ElseIf ItemType == 3 || ItemType == 4
+      ;No differnetiation between types, so just put them in the designated container
+      String ItemName = SCVLib.nameGet(akBaseItem)  ;For some reason a "Null" Item keeps being added without any name, and doesn't show up when vomited
+      If !ItemName
+        Return
+      EndIf
+      While aiItemCount
+        SCVLib.addItem(TargetActor, akItemReference, akBaseItem, ItemType)
         If !akItemReference
           RemoveItem(akBaseItem, 1, False)
         EndIf
-      EndIf
-      aiItemCount -= 1
-    EndWhile
+        aiItemCount -= 1
+      EndWhile
+    ;ElseIf ItemType == Whatever
+    EndIf
   ;ElseIf InsertType == 3 ???
   EndIf
 EndEvent
