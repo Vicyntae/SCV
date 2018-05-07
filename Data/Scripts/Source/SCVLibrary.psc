@@ -72,32 +72,29 @@ Function checkSCVData(Actor akTarget, Int aiTargetData)
           JMap.setInt(aiTargetData, "WF_BasementStorage", JMap.getInt(aiTargetData, "WF_BasementStorage") + PerkPlus)
         EndIf
 
-        Int PerkList = Utility.RandomInt(1000000000000, 1999999999999)
-        If PerkList != 1000000000000
-          initializePerk(akTarget, "SCV_IntenseHunger", StringUtil.Substring(PerkList, 1, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_MetalMuncher", StringUtil.Substring(PerkList, 2, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_ExpiredEpicurian", StringUtil.Substring(PerkList, 3, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_FollowerofNamira", StringUtil.Substring(PerkList, 4, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_DaedraDieter", StringUtil.Substring(PerkList, 5, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_DragonDevourer", StringUtil.Substring(PerkList, 6, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_Constriction", StringUtil.Substring(PerkList, 7, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_SpiritSwallower", StringUtil.Substring(PerkList, 8, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_RemoveLimits", StringUtil.Substring(PerkList, 9, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_Nourish", StringUtil.Substring(PerkList, 10, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_Acid", StringUtil.Substring(PerkList, 11, 1) as Int, Chance1)
-          initializePerk(akTarget, "SCV_Stalker", StringUtil.Substring(PerkList, 12, 1) as Int, Chance1)
-        EndIf
+        initializePerk(akTarget, "SCV_IntenseHunger", Chance1)
+        initializePerk(akTarget, "SCV_MetalMuncher", Chance1)
+        initializePerk(akTarget, "SCV_ExpiredEpicurian", Chance1)
+        initializePerk(akTarget, "SCV_FollowerofNamira", Chance1)
+        initializePerk(akTarget, "SCV_DaedraDieter", Chance1)
+        initializePerk(akTarget, "SCV_DragonDevourer", Chance1)
+        initializePerk(akTarget, "SCV_Constriction", Chance1)
+        initializePerk(akTarget, "SCV_SpiritSwallower", Chance1)
+        initializePerk(akTarget, "SCV_RemoveLimits", Chance1)
+        initializePerk(akTarget, "SCV_Nourish", Chance1)
+        initializePerk(akTarget, "SCV_Acid", Chance1)
+        initializePerk(akTarget, "SCV_Stalker", Chance1)
         takeUpPerks(akTarget, "SCV_FollowerofNamira", 1)
       EndIf
 
       JMap.setInt(aiTargetData, "SCV_ResLevel", Math.Ceiling(Chance2))
       Int PerkList = Utility.RandomInt(100000, 199999)
       If PerkList != 100000
-        initializePerk(akTarget, "SCV_CorneredRat", StringUtil.Substring(PerkList, 1, 1) as Int, Chance2)
-        initializePerk(akTarget, "SCV_StrokeOfLuck", StringUtil.Substring(PerkList, 2, 1) as Int, Chance2)
-        initializePerk(akTarget, "SCV_ExpectPushback", StringUtil.Substring(PerkList, 3, 1) as Int, Chance2)
-        initializePerk(akTarget, "SCV_FillingMeal", StringUtil.Substring(PerkList, 4, 1) as Int, Chance2)
-        initializePerk(akTarget, "SCV_ThrillingStruggle", StringUtil.Substring(PerkList, 5, 1) as Int, Chance2)
+        initializePerk(akTarget, "SCV_CorneredRat", Chance2)
+        initializePerk(akTarget, "SCV_StrokeOfLuck", Chance2)
+        initializePerk(akTarget, "SCV_ExpectPushback", Chance2)
+        initializePerk(akTarget, "SCV_FillingMeal", Chance2)
+        initializePerk(akTarget, "SCV_ThrillingStruggle", Chance2)
       EndIf
       JMap.setInt(aiTargetData, "SCV_Constriction", JMap.getInt(aiTargetData, "SCV_Constriction") + 5)
       JMap.setInt(aiTargetData, "SCV_ThrillingStruggle", JMap.getInt(aiTargetData, "SCV_ThrillingStruggle") + 5)
@@ -119,16 +116,19 @@ Function checkSCVData(Actor akTarget, Int aiTargetData)
   JMap.setInt(aiTargetData, "SCV_DataVersion", ActorDataVersion)
 EndFunction
 
-Function initializePerk(Actor akTarget, String asPerkID, Int aiPerkDerivative, Float afChance)
+Function initializePerk(Actor akTarget, String asPerkID, Float afChance)
   Int i
-  If aiPerkDerivative < 5
+  Float afBonus = Utility.RandomFloat(-1, 1)
+  afChance += afBonus
+  If afChance < 0.5
     i = 0
-  ElseIf aiPerkDerivative < 9
+  ElseIf afChance < 0.9
     i = 1
-  ElseIf aiPerkDerivative < 10
+  ElseIf afChance < 1
     i = 2
+  ElseIf afChance < 1.5
+    i = 3
   EndIf
-  i += Math.Floor(afChance / 70)
   If i > 3
     i = 3
   EndIf
