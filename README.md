@@ -15,3 +15,5 @@ Addon for SCL which adds oral and anal vore to Skyrim
  * Groaning sound effects
  * Recolored vomit pile
  * And any other suggestions that you can think of :) 
+## How to Build
+* Put Data into a zip folder and install using a mod manager
