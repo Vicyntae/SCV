@@ -110,7 +110,6 @@ Event OnQuickUpdate()
       SCVLib.setProxy(MyActor, "Magicka", MyActor.GetActorValue("Magicka"))
     EndIf/;
   EndIf
-
   Parent.OnQuickUpdate()
 EndEvent
 

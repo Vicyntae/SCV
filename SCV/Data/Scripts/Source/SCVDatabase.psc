@@ -795,7 +795,6 @@ String[] Function setupInstalledMods()
     setupFNIS(JFD_Items)
     SCVSet.FNIS_Initialized = True
     JArray.addStr(JA_ModsChanged, "Added FNIS.esp")
-    Debug.Notification("FNIS Installed!")
   ElseIf !SCLibrary.isModInstalled("FNIS.esp") && SCVSet.FNIS_Initialized
     removeFNIS(JFD_Items)
     SCVSet.FNIS_Initialized = False
@@ -838,7 +837,7 @@ Function setupFNIS(Int JFD_Items)
 
   setBoneScale(Anim, 4, 1, "NPC COM [COM]", 0.1)
   setTimer(Anim, 4, 0.3333)
-  JValue.writeToFile(Anim, "SCV_AnimTest.txt")
+  ;JValue.writeToFile(Anim, "SCV_AnimTest.txt")
   ;*****************************************************************************
 EndFunction
 

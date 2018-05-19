@@ -62,7 +62,7 @@ EndEvent
 
 Event OnAnimCancel(Int aiThreadID)
   If aiThreadID == ThreadID
-    Note("Thread Canceled From Outside!")
+    ;Note("Thread Canceled From Outside!")
     resetThread()
   EndIf
 EndEvent
@@ -71,35 +71,39 @@ Event OnAnimStart(Int aiThreadID)
   If aiThreadID == ThreadID
     ;Weapon swapping?
     ;Note("Animation Starting!")
+    Int NumActors = Actors.length
     Int i = 100
     If JM_AnimInfo == 0
-      Note("JM_AnimInfo not ready yet!")
+      ;Note("JM_AnimInfo not ready yet!")
       While JM_AnimInfo == 0 && i
         Utility.WaitMenuMode(0.1)
         i -= 1
       EndWhile
     EndIf
     If (!i && JM_AnimInfo == 0) || JM_AnimInfo == -1
-      Note("No Animations found! Canceling Thread")
+      ;Note("No Animations found! Canceling Thread")
       If AnimType == "Oral"
         Actors[0].Say(SCVSet.SCV_SwallowSound)
       ElseIf AnimType == "Anal"
         Actors[0].Say(SCVSet.SCV_TakeInSound)
       EndIf
-      If i != 0
-        If Actors[i] == PlayerRef
-          SCVSet.SCV_FollowPred.ForceRefTo(Actors[0])
-        Else
-          Actors[i].MoveTo(SCLSet.SCL_HoldingCell)
+      Int k
+      While k < NumActors
+        If k != 0
+          If Actors[k] == PlayerRef
+            SCVSet.SCV_FollowPred.ForceRefTo(Actors[0])
+          Else
+            Actors[k].MoveTo(SCLSet.SCL_HoldingCell)
+          EndIf
         EndIf
-      EndIf
+        k += 1
+      EndWhile
       resetThread()
       Return
     EndIf
-    Note("Animation File Found! Name = " + getAnimationName())
+    ;Note("Animation File Found! Name = " + getAnimationName())
     CurrentStage = -1
     Int j
-    Int NumActors = Actors.length
     While j < NumActors
       ActorUtil.AddPackageOverride(Actors[i], SCLSet.SCL_HoldPackage)
       Actors[i].EvaluatePackage()
@@ -160,7 +164,7 @@ Function updateActors(Int Stage)
       While BoneKey
         Bool Gender = Actors[i].GetLeveledActorBase().GetSex() as Bool
         If NetImmerse.HasNode(Actors[i], BoneKey, False)
-          Note("Scaling Bone " + BoneKey)
+          ;Note("Scaling Bone " + BoneKey)
           NiOverride.AddNodeTransformScale(Actors[i], False, Gender, BoneKey, "SCVAnim", JMap.getFlt(JM_Bones, BoneKey))
           JMap.setFlt(JM_BonesChanged, BoneKey, JMap.getFlt(JM_Bones, BoneKey))
         EndIf
@@ -221,7 +225,7 @@ Event OnUpdate()
   Working += 1
   CurrentStage += 1
   Float Timer = getTimer(CurrentStage)
-  Note("Timer = " + Timer)
+  ;Note("Timer = " + Timer)
   If Timer <= 0
     Finished = True
     Timer = 0.1
@@ -248,14 +252,14 @@ Function Finish()
       Utility.Wait(0.1)
     EndWhile
   EndIf
-  Note("Animation Finished! Resetting morphs and bone scales!")
+  ;Note("Animation Finished! Resetting morphs and bone scales!")
   Actor CurrentActor = JFormMap.nextKey(JF_ActorBonesChanged) as Actor
   While CurrentActor
     Int JM_BonesChanged = JFormMap.getObj(JF_ActorBonesChanged, CurrentActor)
     String BoneName = JMap.nextKey(JM_BonesChanged)
     Bool Gender = CurrentActor.GetLeveledActorBase().GetSex() as Bool
     While BoneName
-      Note("Resetting bone for " + SCVLib.nameGet(CurrentActor) +": " + BoneName)
+      ;Note("Resetting bone for " + SCVLib.nameGet(CurrentActor) +": " + BoneName)
       NiOverride.RemoveNodeTransformScale(CurrentActor, False, Gender, BoneName, "SCVAnim")
       BoneName = JMap.nextKey(JM_BonesChanged, BoneName)
     EndWhile
@@ -280,6 +284,37 @@ Function Finish()
       Actors[i].SetDontMove(False)
     EndIf
     Debug.SendAnimationEvent(Actors[i], "IdleForceDefaultState")
+    Form REquip = Actors[i].GetEquippedObject(1)
+    Form LEquip = Actors[i].GetEquippedObject(0)
+    If REquip
+      If REquip as Weapon || (REquip as Armor).IsShield()
+        Actors[i].UnequipItemEx(REquip, 1)
+      ElseIf(REquip as Spell)
+        Actors[i].UnequipSpell(Requip as Spell, 1)
+      EndIf
+    EndIf
+    If LEquip
+      If LEquip as Weapon || (LEquip as Armor).IsShield()
+        Actors[i].UnequipItemEx(LEquip, 0)
+      ElseIf(LEquip as Spell)
+        Actors[i].UnequipSpell(Requip as Spell, 0)
+      EndIf
+    EndIf
+    Utility.Wait(0.1)
+    If REquip
+      If REquip as Weapon || (REquip as Armor && (REquip as Armor).IsShield())
+        Actors[i].EquipItemEx(REquip, 1, False, True)
+      ElseIf REquip as Spell
+        Actors[i].EquipSpell(REquip as Spell, 1)
+      EndIf
+    EndIf
+    If LEquip
+      If LEquip as Weapon || (LEquip as Armor && (LEquip as Armor).IsShield())
+        Actors[i].EquipItemEx(LEquip, 2, False, True)
+      ElseIf LEquip as Spell
+        Actors[i].EquipSpell(LEquip as Spell, 0)
+      EndIf
+    EndIf
     If i != 0
       If Actors[i] == PlayerRef
         SCVSet.SCV_FollowPred.ForceRefTo(Actors[0])

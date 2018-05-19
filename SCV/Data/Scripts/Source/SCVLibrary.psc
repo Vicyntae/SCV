@@ -1378,6 +1378,28 @@ Int Function insertPrey(Actor akPred, Actor akPrey, Int aiItemType, Bool abFrien
   Return JM_PreyEntry
 EndFunction/;
 
+Function updateFullness(Actor akTarget, Bool abNoVomit = False, Int aiTargetData = 0)
+  Int TargetData = getData(akTarget, aiTargetData)
+  Int JF_Contents = getContents(akTarget, 8, TargetData)
+  ObjectReference ItemKey = JFormMap.nextKey(JF_Contents) as ObjectReference
+  Int JI_StruggleValues = JIntMap.object()
+  While ItemKey
+    Int JM_Item = JFormMap.getObj(JF_Contents, ItemKey)
+    Int StoredType = JMap.getInt(JM_Item, "StoredItemType")
+    JIntMap.setFlt(JI_StruggleValues, StoredType, JIntMap.getFlt(JI_StruggleValues, StoredType) + JMap.getFlt(JM_Item, "DigestValue"))
+    ItemKey = JFormMap.nextKey(JF_Contents, ItemKey) as ObjectReference
+  EndWhile
+  If !JValue.empty(JI_StruggleValues)
+    Int i = JIntMap.nextKey(JI_StruggleValues)
+    While i
+      JMap.setFlt(TargetData, "StruggleFullness" + i, JIntMap.getFlt(JI_StruggleValues, i))
+      i = JIntMap.nextKey(JI_StruggleValues, i)
+    EndWhile
+  EndIf
+  JValue.zeroLifetime(JI_StruggleValues)
+  Parent.updateFullness(akTarget, abNoVomit, aiTargetData)
+EndFunction
+
 Function PauseFollowPred()
   (SCVSet.SCV_FollowPred as SCVStayWithMe).addToDelayCounter()
 EndFunction
