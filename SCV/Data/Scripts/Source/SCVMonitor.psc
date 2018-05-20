@@ -115,11 +115,13 @@ EndEvent
 
 Function checkAutoEat(Float afFullness, Float afCurrentUpdateTime)
   Parent.checkAutoEat(afFullness, afCurrentUpdateTime)
-  If MyActor != PlayerRef
-    Float EatTimePassed = ((afCurrentUpdateTime - (JMap.getFlt(ActorData, "LastEatTime")))*24) ;In hours
-    If EatTimePassed >= 36
-      PlayerThoughtDB(MyActor, "SCVStarvingFrenzy")
-      SCVSet.SCV_OVFrenzySelfSpell01.Cast(MyActor)
+  If SCLSet.AutoEatActive
+    If MyActor != PlayerRef
+      Float EatTimePassed = ((afCurrentUpdateTime - (JMap.getFlt(ActorData, "LastEatTime")))*24) ;In hours
+      If EatTimePassed >= 36
+        PlayerThoughtDB(MyActor, "SCVStarvingFrenzy")
+        SCVSet.SCV_OVFrenzySelfSpell01.Cast(MyActor)
+      EndIf
     EndIf
   EndIf
 EndFunction
