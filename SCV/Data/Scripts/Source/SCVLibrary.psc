@@ -1498,37 +1498,37 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
     If PreyRace.HasKeyword(SCVSet.ActorTypeNPC)
       JMap.setInt(nextPredData, "SCV_NumHumansEaten", JMap.getInt(nextPredData, "SCV_NumHumansEaten") + 1)
       If getCurrentPerkLevel(nextPred, "SCV_FollowerofNamira") >= 2
-        Note("Adding Items to " + nameGet(akTarget) + " for finishing human prey.")
+        Notice("Adding Items to " + nameGet(akTarget) + " for finishing human prey.")
         insertLeveledItems(nextPred, StorageType, SCVSet.SCV_LeveledHumanItems)
       EndIf
     ElseIf PreyRace.HasKeyword(SCVSet.ActorTypeDragon)
       JMap.setInt(nextPredData, "SCV_NumDragonsEaten", JMap.getInt(nextPredData, "SCV_NumDragonsEaten") + 1)
       If getCurrentPerkLevel(nextPred, "SCV_DragonDevourer") >= 3
-        Note("Adding Items to " + nameGet(akTarget) + " for finishing dragon prey.")
+        Notice("Adding Items to " + nameGet(akTarget) + " for finishing dragon prey.")
         insertLeveledItems(nextPred, StorageType, SCVSet.SCV_LeveledDragonItems)
       EndIf
     ElseIf PreyRace.HasKeyword(SCVSet.ActorTypeDwarven)
       JMap.setInt(nextPredData, "SCV_NumDwarvenEaten", JMap.getInt(nextPredData, "SCV_NumDwarvenEaten") + 1)
       If getCurrentPerkLevel(nextPred, "SCV_MetalMuncher") >= 2
-        Note("Adding Items to " + nameGet(akTarget) + " for finishing dwarven prey.")
+        Notice("Adding Items to " + nameGet(akTarget) + " for finishing dwarven prey.")
         insertLeveledItems(nextPred, StorageType, SCVSet.SCV_LeveledDwarvenItems)
       EndIf
     ElseIf PreyRace.HasKeyword(SCVSet.ActorTypeGhost)
       JMap.setInt(nextPredData, "SCV_NumGhostsEaten", JMap.getInt(nextPredData, "SCV_NumGhostsEaten") + 1)
       If getCurrentPerkLevel(nextPred, "SCV_SpiritSwallower") >= 2
-        Note("Adding Items to " + nameGet(akTarget) + " for finishing ghost prey.")
+        Notice("Adding Items to " + nameGet(akTarget) + " for finishing ghost prey.")
         insertLeveledItems(nextPred, StorageType, SCVSet.SCV_LeveledGhosttems)
       EndIf
     ElseIf PreyRace.HasKeyword(SCVSet.ActorTypeUndead)
       JMap.setInt(nextPredData, "SCV_NumUndeadEaten", JMap.getInt(nextPredData, "SCV_NumUndeadEaten") + 1)
       If getCurrentPerkLevel(nextPred, "SCV_ExpiredEpicurian") >= 2
-        Note("Adding Items to " + nameGet(akTarget) + " for finishing undead prey.")
+        Notice("Adding Items to " + nameGet(akTarget) + " for finishing undead prey.")
         insertLeveledItems(nextPred, StorageType, SCVSet.SCV_LeveledUndeadItems)
       EndIf
     ElseIf PreyRace.HasKeyword(SCVSet.ActorTypeDaedra)
       JMap.setInt(nextPredData, "SCV_NumDaedraEaten", JMap.getInt(nextPredData, "SCV_NumDaedraEaten") + 1)
       If getCurrentPerkLevel(nextPred, "SCV_DaedraDieter") >= 2
-        Note("Adding Items to " + nameGet(akTarget) + " for finishing daedra prey.")
+        Notice("Adding Items to " + nameGet(akTarget) + " for finishing daedra prey.")
         insertLeveledItems(nextPred, StorageType, SCVSet.SCV_LeveledDaedraItems)
       EndIf
     EndIf

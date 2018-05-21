@@ -7,7 +7,7 @@ Event OnTriggerEnter(ObjectReference akTriggerRef)
 		if akTriggerRef == Game.GetPlayer()
 			InTrigger += 1
       GetLinkedRef().GoToState("PlayerNear")
-			debug.notification("Entered Trigger")
+			;debug.notification("Entered Trigger")
 		endif
 	endif
 EndEvent
@@ -17,7 +17,7 @@ Event OnTriggerLeave(ObjectReference akTriggerRef)
 		if akTriggerRef == Game.GetPlayer()
 			InTrigger -= 1
       GetLinkedRef().GoToState("PlayerFar")
-			debug.notification("Leaving Trigger")
+			;debug.notification("Leaving Trigger")
 		endif
 	endif
 EndEvent

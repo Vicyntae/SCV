@@ -225,6 +225,8 @@ Event OnPageReset(string a_page)
     AddSliderOptionST("CurveBelly_S", "$Belly Curve", SCLSet.BellyCurve, "{2}")
     AddSliderOptionST("IncBelly_S", "$Belly Increment", SCLSet.BellyIncr, "{1}") ;17
     AddSliderOptionST("DynEquipModifier_S", "$Dynamic Equipment Multiplier", SCLSet.DynEquipModifier, "x{2}")
+    AddSliderOptionST("DynMinSize_S", "$Dynamic Equipment Minimum Value", SCLSet.DynMinSize, "{1}")
+    AddEmptyOption()
 
     ;/If SCLSet.InflateMethodArray[SCLSet.BellyInflateMethod] == "Equipment"
       AddSliderOptionST("EquipmentTierSelect_S", "Select Tier", SelectedEquipmentTier, "Tier {0}") ;17
@@ -240,7 +242,7 @@ Event OnPageReset(string a_page)
       AddSliderOptionST("SetAVDestination_S", "$Choose Anal Vore Behavior.", SCVSet.AVDestinationChoice, "Option {0}")
       AddKeyMapOptionST("WF_ActionKeyPick_KM", "$Choose Waste Function Action Key", SCLSet.WF_ActionKey)
       AddToggleOptionST("WF_SolidEnable_TOG", "$Enable Solid Waste Functions", SCLSet.WF_SolidActive)
-      AddSliderOptionST("WF_SolidIllnessBuildUpDecrease_S", "Build Up Decrease Rate", SCLSet.WF_SolidIllnessBuildUpDecrease, "{1}/hr")
+      AddSliderOptionST("WF_SolidIllnessBuildUpDecrease_S", "Build Up Decrease Rate", SCLSet.IllnessBuildUpDecrease, "{1}/hr")
       AddEmptyOption()
       AddToggleOptionST("WF_LiquidEnable_TOG", "$Enable Liquid Waste Functions", SCLSet.WF_LiquidActive)
 
