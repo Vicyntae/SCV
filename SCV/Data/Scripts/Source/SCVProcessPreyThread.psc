@@ -59,10 +59,10 @@ Function updateStruggle(Actor akTarget, Int aiHigherStruggle = 0, Int aiHigherDa
       StruggleAdd = SCVLib.getTotalPerkLevel(i, "SCV_ThrillingStruggle", PreyData)
       DamageAdd = SCVLib.getTotalPerkLevel(i, "SCV_CorneredRat", PreyData)
     Else
-      StruggleAdd = 5
+      StruggleAdd = 10
     EndIf
     If !StruggleAdd
-      StruggleAdd = 5
+      StruggleAdd = 10
     EndIf
     TotalPreyStruggle += StruggleAdd
     TotalPreyDamage += DamageAdd

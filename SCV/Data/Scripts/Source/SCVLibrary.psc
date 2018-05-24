@@ -20,7 +20,7 @@ Function checkSCVData(Actor akTarget, Int aiTargetData)
 
       JMap.setInt(aiTargetData, "SCV_ResLevel", 10)
       JMap.setInt(aiTargetData, "SCV_Constriction", JMap.getInt(aiTargetData, "SCV_Constriction") + 5)
-      JMap.setInt(aiTargetData, "SCV_ThrillingStruggle", JMap.getInt(aiTargetData, "SCV_ThrillingStruggle") + 5)
+      JMap.setInt(aiTargetData, "SCV_ThrillingStruggle", JMap.getInt(aiTargetData, "SCV_ThrillingStruggle") + 10)
 
     Else
       Bool bPred = False
@@ -88,16 +88,13 @@ Function checkSCVData(Actor akTarget, Int aiTargetData)
       EndIf
 
       JMap.setInt(aiTargetData, "SCV_ResLevel", Math.Ceiling(Chance2))
-      Int PerkList = Utility.RandomInt(100000, 199999)
-      If PerkList != 100000
-        initializePerk(akTarget, "SCV_CorneredRat", Chance2)
-        initializePerk(akTarget, "SCV_StrokeOfLuck", Chance2)
-        initializePerk(akTarget, "SCV_ExpectPushback", Chance2)
-        initializePerk(akTarget, "SCV_FillingMeal", Chance2)
-        initializePerk(akTarget, "SCV_ThrillingStruggle", Chance2)
-      EndIf
-      JMap.setInt(aiTargetData, "SCV_Constriction", JMap.getInt(aiTargetData, "SCV_Constriction") + 5)
-      JMap.setInt(aiTargetData, "SCV_ThrillingStruggle", JMap.getInt(aiTargetData, "SCV_ThrillingStruggle") + 5)
+      initializePerk(akTarget, "SCV_CorneredRat", Chance2)
+      initializePerk(akTarget, "SCV_StrokeOfLuck", Chance2)
+      initializePerk(akTarget, "SCV_ExpectPushback", Chance2)
+      initializePerk(akTarget, "SCV_FillingMeal", Chance2)
+      initializePerk(akTarget, "SCV_ThrillingStruggle", Chance2)
+      JMap.setInt(aiTargetData, "SCV_Constriction", JMap.getInt(aiTargetData, "SCV_Constriction") + 10)
+      JMap.setInt(aiTargetData, "SCV_ThrillingStruggle", JMap.getInt(aiTargetData, "SCV_ThrillingStruggle") + 10)
       Int B = Utility.RandomInt(0, 10)
       Int AllureLevel
       If B <= 2

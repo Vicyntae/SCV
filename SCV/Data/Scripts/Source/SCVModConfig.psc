@@ -118,31 +118,11 @@ Event OnPageReset(string a_page)
     AddEmptyOption()
     If SelectedActor
       Actor S = SelectedActor
-      addPerkOption(S, "SCLRoomForMore") ;7
-      addPerkOption(S, "SCLStoredLimitUp") ;9
-      addPerkOption(S, "SCLHeavyBurden") ;11
-      addPerkOption(S, "SCLAllowOverflow") ;13
-      addPerkOption(S, "WF_BasementStorage")
-
-      addPerkOption(S, "SCV_IntenseHunger")
-      addPerkOption(S, "SCV_MetalMuncher")
-      addPerkOption(S, "SCV_FollowerofNamira")
-      addPerkOption(S, "SCV_DragonDevourer")
-      addPerkOption(S, "SCV_SpiritSwallower")
-      addPerkOption(S, "SCV_ExpiredEpicurian")
-      addPerkOption(S, "SCV_DaedraDieter")
-      addPerkOption(S, "SCV_Stalker")
-      ;addPerkOption(S, "SCV_RemoveLimits")
-      addPerkOption(S, "SCV_Constriction")
-      addPerkOption(S, "SCV_Acid")
-      addPerkOption(S, "SCV_Nourish")
-      addPerkOption(S, "SCV_PitOfSouls")
-
-      addPerkOption(S, "SCV_StrokeOfLuck")
-      addPerkOption(S, "SCV_ExpectPushback")
-      addPerkOption(S, "SCV_CorneredRat")
-      addPerkOption(S, "SCV_FillingMeal")
-      addPerkOption(S, "SCV_ThrillingStruggle")
+      String asPerkID = JMap.nextKey(SCLSet.JM_PerkIDs)
+      While asPerkID
+        addPerkOption(SelectedActor, asPerkID)
+        asPerkID = JMap.nextKey(SCLSet.JM_PerkIDs, asPerkID)
+      EndWhile
     Else
       AddTextOptionST("ChooseActorMessage_T", "$Choose an actor.", "")
     Endif
@@ -208,7 +188,7 @@ Event OnPageReset(string a_page)
     AddSliderOptionST("GlobalDigest_S", "$Global Digestion Rate", SCLSet.GlobalDigestMulti, "x{1}")
     AddSliderOptionST("UpdateRate_S", "$Update Rate", SCLSet.UpdateRate, "Every {1} Seconds")
     AddSliderOptionST("UpdateDelay_S", "$Update Delay", SCLSet.UpdateDelay, "Pause for {1} Seconds")
-    AddEmptyOption()
+    AddSliderOptionST("WF_SolidIllnessBuildUpDecrease_S", "Build Up Decrease Rate", SCLSet.IllnessBuildUpDecrease, "{1}/hr")
 
     AddHeaderOption("Expand Settings") ;7
     AddHeaderOption("")
@@ -220,7 +200,7 @@ Event OnPageReset(string a_page)
     AddMenuOptionST("BellyInflateMethod_M", "$Belly Method", SCLSet.InflateMethodArray[SCLSet.BellyInflateMethod])
     AddSliderOptionST("MinBelly_S", "$Belly Minimum Size", SCLSet.BellyMin, "{1}")
     AddSliderOptionST("MaxBelly_S", "$Belly Maximum Size", SCLSet.BellyMax, "{1}")
-    AddSliderOptionST("MultiBelly_S", "Belly Multiplier", SCLSet.BellyMulti, "x{1}")
+    AddSliderOptionST("MultiBelly_S", "$Belly Multiplier", SCLSet.BellyMulti, "x{1}")
     AddSliderOptionST("HighScaleBelly_S", "$High-Value Belly Scale", SCLSet.BellyHighScale, "{2}")
     AddSliderOptionST("CurveBelly_S", "$Belly Curve", SCLSet.BellyCurve, "{2}")
     AddSliderOptionST("IncBelly_S", "$Belly Increment", SCLSet.BellyIncr, "{1}") ;17
@@ -242,10 +222,7 @@ Event OnPageReset(string a_page)
       AddSliderOptionST("SetAVDestination_S", "$Choose Anal Vore Behavior.", SCVSet.AVDestinationChoice, "Option {0}")
       AddKeyMapOptionST("WF_ActionKeyPick_KM", "$Choose Waste Function Action Key", SCLSet.WF_ActionKey)
       AddToggleOptionST("WF_SolidEnable_TOG", "$Enable Solid Waste Functions", SCLSet.WF_SolidActive)
-      AddSliderOptionST("WF_SolidIllnessBuildUpDecrease_S", "Build Up Decrease Rate", SCLSet.IllnessBuildUpDecrease, "{1}/hr")
-      AddEmptyOption()
       AddToggleOptionST("WF_LiquidEnable_TOG", "$Enable Liquid Waste Functions", SCLSet.WF_LiquidActive)
-
       ;AddToggleOptionST("WF_GasEnable_TOG", "$Enable Gas Waste Functions", SCLSet.WF_GasActive)
       ;AddEmptyOption()
     EndIf
