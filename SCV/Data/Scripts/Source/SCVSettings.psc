@@ -257,8 +257,6 @@ SCAModConfig Property SCAMCM Auto/;
 Bool Property SizeMatters_Initialized = False Auto
 Bool Property SizeMattersActive = True Auto
 
-;FNIS --------------------------------------------------------------------------
-Bool Property FNIS_Initialized Auto
 ;Sound Effects *****************************************************************
 Topic Property SCV_SwallowSound Auto
 Topic Property SCV_TakeInSound Auto

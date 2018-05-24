@@ -790,16 +790,6 @@ String[] Function setupInstalledMods()
   String[] ModsChanged = Parent.setupInstalledMods()
   Int JA_ModsChanged = JValue.retain(JArray.objectWithStrings(ModsChanged))
   Int JFD_Items = JDB.solveObj(".SCLItemDatabase")
-;FNIS --------------------------------------------------------------------------
-  If SCLibrary.isModInstalled("FNIS.esp") && !SCVSet.FNIS_Initialized
-    setupFNIS(JFD_Items)
-    SCVSet.FNIS_Initialized = True
-    JArray.addStr(JA_ModsChanged, "Added FNIS.esp")
-  ElseIf !SCLibrary.isModInstalled("FNIS.esp") && SCVSet.FNIS_Initialized
-    removeFNIS(JFD_Items)
-    SCVSet.FNIS_Initialized = False
-    JArray.addStr(JA_ModsChanged, "Removed FNIS.esp")
-  EndIf
 
   ;Size Matters ----------------------------------------------------------------
   If SCLibrary.isModInstalled("GTS.esp") && !SCVSet.SizeMatters_Initialized
@@ -819,6 +809,7 @@ String[] Function setupInstalledMods()
 EndFunction
 
 Function setupFNIS(Int JFD_Items)
+  Parent.setupFnis(JFD_Items)
   ;SCV_ThroatGrabSwallowAnim01 *************************************************
   Int Anim = createAnimationBase("ThroatGrabSwallow01", "Oral", "human", "human", 0, "Combat")
   setActorOffset(Anim, 0, 1, 100, 0, 0, 0)
