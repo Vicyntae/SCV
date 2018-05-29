@@ -133,7 +133,11 @@ Event OnSpellCast(Form akSpell)
     If SCVSet.SCV_VoreSpellList.HasForm(akSpell)
       ;Note("Valid spell cast!")
       isAnimated = True
-      Form RWeapon = MyActor.GetEquippedObject(1)
+      Bool Drawn = MyActor.IsWeaponDrawn()
+      If Drawn
+        MyActor.SheatheWeapon()
+      EndIf
+      ;/Form RWeapon = MyActor.GetEquippedObject(1)
       Form LWeapon = MyActor.GetEquippedObject(0)
       If RWeapon
         If RWeapon as Weapon || (RWeapon as Armor).IsShield()
@@ -150,13 +154,13 @@ Event OnSpellCast(Form akSpell)
           MyActor.UnequipSpell(LWeapon as Spell, 0)
         EndIf
       EndIf
-      Utility.Wait(0.5)
+      Utility.Wait(0.5)/;
       Debug.SendAnimationEvent(MyActor, "SCV_GrabEvent01")
       ;MyActor.PlayIdle(SCVSet.SCV_GrabIdle)
       Utility.Wait(0.5)
       Debug.SendAnimationEvent(MyActor, "IdleForceDefaultState")
       ;MyActor.PlayIdle(SCVSet.IdleStop)
-      If RWeapon
+      ;/If RWeapon
         If RWeapon as Weapon || (RWeapon as Armor && (RWeapon as Armor).IsShield())
           MyActor.EquipItemEx(RWeapon, 1, False, True)
         ElseIf RWeapon as Spell
@@ -170,6 +174,9 @@ Event OnSpellCast(Form akSpell)
         ElseIf LWeapon as Spell
           MyActor.EquipSpell(LWeapon as Spell, 0)
         EndIf
+      EndIf/;
+      If Drawn
+        MyActor.DrawWeapon()
       EndIf
       isAnimated = False
     EndIf
