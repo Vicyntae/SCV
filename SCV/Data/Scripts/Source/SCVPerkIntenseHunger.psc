@@ -2,6 +2,7 @@ ScriptName SCVPerkIntenseHunger Extends SCLPerkBase
 SCVLibrary Property SCVLib Auto
 
 Function Setup()
+  Name = "Intense Hunger"
   Description = New String[4]
   Description[0] = "Increases chance of success of swallow spells."
   Description[1] = "Increases success chance of swallow spells by 5%."
@@ -38,5 +39,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     If aiPerkLevel <= 3 && NumEatenPrey >= Req2 && OVLevel >= Req2
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

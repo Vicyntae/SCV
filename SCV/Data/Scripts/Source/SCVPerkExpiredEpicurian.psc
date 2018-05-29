@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Expired Epicurian"
   Description = New String[4]
   Description[0] = "Allows you to eat the undead."
   Description[1] = "Allows you to eat the undead."
@@ -32,5 +33,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     ElseIf aiPerkLevel == 3 && Stamina >= 300 && Level >= 15 && NumEatenPrey >= 15 && PlayerRef.HasMagicEffect(SCVSet.EnchDragonPriestUltraMaskEffect)  ;Obtain Konahrik
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

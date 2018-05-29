@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Pit of Souls"
   Description = New String[4]
   Description[0] = "Enables one to capture enemy souls."
   Description[1] = "Enables one to capture enemy souls by storing soul gems in their stomach."
@@ -31,5 +32,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Return True
   ElseIf aiPerkLevel == 3 && Enchant >= 90 && Level >= 50 && NumSoulsCaptured >= 70 && SCVSet.MGRitual03.GetStage() == 200  ;Complete Conjuration Ritual Spell
     Return True
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isOVPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

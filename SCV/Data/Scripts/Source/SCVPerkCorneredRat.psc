@@ -4,6 +4,7 @@ SCVSettings Property SCVSet Auto
 
 
 Function Setup()
+  Name = "Cornered Rat"
   Description = New String[4]
   Description[0] = "Deals health damage to one's pred."
   Description[1] = "Deals slight health damage to one's predator."

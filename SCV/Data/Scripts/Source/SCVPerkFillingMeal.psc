@@ -2,6 +2,7 @@ ScriptName SCVPerkFillingMeal Extends SCLPerkBase
 SCVLibrary Property SCVLib Auto
 
 Function Setup()
+  Name = "Filling Meal"
   Description = New String[4]
   Description[0] = "Increase's one's size while inside a predator."
   Description[1] = "Increase's one's size while inside a predator by 20%."
@@ -28,5 +29,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Return True
   ElseIf aiPerkLevel == 3 && DigestValue >= 800 && Resist >= 50 && Level >= 35
     Return True
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

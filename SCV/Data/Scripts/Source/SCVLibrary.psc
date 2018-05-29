@@ -1378,20 +1378,45 @@ EndFunction/;
 Function updateFullness(Actor akTarget, Bool abNoVomit = False, Int aiTargetData = 0)
   Int TargetData = getData(akTarget, aiTargetData)
   Int JF_Contents = getContents(akTarget, 8, TargetData)
-  ObjectReference ItemKey = JFormMap.nextKey(JF_Contents) as ObjectReference
+  Form ItemKey = JFormMap.nextKey(JF_Contents)
   Int JI_StruggleValues = JIntMap.object()
-  While ItemKey
-    Int JM_Item = JFormMap.getObj(JF_Contents, ItemKey)
-    Int StoredType = JMap.getInt(JM_Item, "StoredItemType")
-    JIntMap.setFlt(JI_StruggleValues, StoredType, JIntMap.getFlt(JI_StruggleValues, StoredType) + JMap.getFlt(JM_Item, "DigestValue"))
-    ItemKey = JFormMap.nextKey(JF_Contents, ItemKey) as ObjectReference
-  EndWhile
-  If !JValue.empty(JI_StruggleValues)
-    Int i = JIntMap.nextKey(JI_StruggleValues)
-    While i
-      JMap.setFlt(TargetData, "StruggleFullness" + i, JIntMap.getFlt(JI_StruggleValues, i))
-      i = JIntMap.nextKey(JI_StruggleValues, i)
+  Int JA_Remove
+  If ItemKey
+    While ItemKey
+      If ItemKey as Actor
+        Int JM_Item = JFormMap.getObj(JF_Contents, ItemKey)
+        Int StoredType = JMap.getInt(JM_Item, "StoredItemType")
+        Note("Adding " + nameGet(ItemKey) + " To struggle fullness " + StoredType + ", DValue = " + JMap.getFlt(JM_Item, "DigestValue"))
+        JIntMap.setFlt(JI_StruggleValues, StoredType, JIntMap.getFlt(JI_StruggleValues, StoredType) + JMap.getFlt(JM_Item, "DigestValue"))
+      Else
+        If !JA_Remove
+          JA_Remove = JArray.object()
+        EndIf
+        JArray.addForm(JA_Remove, ItemKey)
+      EndIf
+      ItemKey = JFormMap.nextKey(JF_Contents, ItemKey)
     EndWhile
+  Else
+    Int f = JIntMap.nextKey(SCLSet.JI_ItemTypes)
+    While f
+      If JMap.hasKey(TargetData, "StruggleFullness" + f)
+        JMap.setFlt(TargetData, "StruggleFullness" + f, 0)
+      EndIf
+      f = JIntMap.nextKey(SCLSet.JI_ItemTypes, f)
+    EndWhile
+  EndIf
+  Int i = JIntMap.nextKey(JI_StruggleValues)
+  While i
+    JMap.setFlt(TargetData, "StruggleFullness" + i, JIntMap.getFlt(JI_StruggleValues, i))
+    i = JIntMap.nextKey(JI_StruggleValues, i)
+  EndWhile
+  If JA_Remove
+    Int k = JArray.count(JA_Remove)
+    While k
+      k -= 1
+      JFormMap.removeKey(JF_Contents, JArray.getForm(JA_Remove, k))
+    EndWhile
+    JValue.zeroLifetime(JA_Remove)
   EndIf
   JValue.zeroLifetime(JI_StruggleValues)
   Parent.updateFullness(akTarget, abNoVomit, aiTargetData)

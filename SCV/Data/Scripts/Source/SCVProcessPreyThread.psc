@@ -13,7 +13,10 @@ Actor Property PlayerRef Auto
 Bool thread_queued = False
 Actor MyActor
 Int ActorData
-
+SCLPerkBase Constriction
+SCLPerkBase Acid
+SCLPerkBase ThrillingStruggle
+SCLPerkBase CorneredRat
 Int Property ThreadID Auto
 
 Function setThread(Actor akTarget)
@@ -21,6 +24,11 @@ Function setThread(Actor akTarget)
 
   MyActor = akTarget
   ActorData = SCVLib.getTargetData(MyActor)
+  Constriction = SCVLib.getPerkForm("SCV_Constriction")
+  Acid = SCVLib.getPerkForm("SCV_Acid")
+  ThrillingStruggle = SCVLib.getPerkForm("SCV_ThrillingStruggle")
+  CorneredRat = SCVLib.getPerkForm("SCV_CorneredRat")
+
 EndFunction
 
 Bool Function queued()
@@ -46,28 +54,33 @@ Function updateStruggle(Actor akTarget, Int aiHigherStruggle = 0, Int aiHigherDa
   {Recursive function, checks pred and all prey for how much damage is done.}
   Int TargetData = SCVLib.getData(akTarget, aiTargetData)
   Int Contents = SCVLib.getContents(akTarget, 8, TargetData)
-  Int PredStruggleLevel = SCVLib.getTotalPerkLevel(akTarget, "SCV_Constriction", TargetData) + 1
-  Int PredDamageLevel = SCVLib.getTotalPerkLevel(akTarget, "SCV_Acid", TargetData)
+  Int PredStruggleLevel = Constriction.getFirstPerkLevel(akTarget) + 1
+  Int PredDamageLevel = Acid.getFirstPerkLevel(akTarget)
   Int TotalPreyStruggle = aiHigherStruggle
   Int TotalPreyDamage = aiHigherDamage
-  Actor i = JFormMap.nextKey(Contents) as Actor
+  Form i = JFormMap.nextKey(Contents) as Form
   While i
-    Int PreyData = SCVLib.getTargetData(i)
-    Int StruggleAdd
-    Int DamageAdd
-    If PreyData
-      StruggleAdd = SCVLib.getTotalPerkLevel(i, "SCV_ThrillingStruggle", PreyData)
-      DamageAdd = SCVLib.getTotalPerkLevel(i, "SCV_CorneredRat", PreyData)
-    Else
-      StruggleAdd = 10
+    If i as ObjectReference
+      If i as Actor
+        Actor akActor = i as Actor
+        Int PreyData = SCVLib.getTargetData(akActor)
+        Int StruggleAdd
+        Int DamageAdd
+        If PreyData
+          StruggleAdd = ThrillingStruggle.getFirstPerkLevel(akActor)
+          DamageAdd = CorneredRat.getFirstPerkLevel(akActor)
+        Else
+          StruggleAdd = 10
+        EndIf
+        If !StruggleAdd
+          StruggleAdd = 10
+        EndIf
+        TotalPreyStruggle += StruggleAdd
+        TotalPreyDamage += DamageAdd
+        updateStruggle(akActor, PredStruggleLevel, PredDamageLevel, PreyData)
+      EndIf
     EndIf
-    If !StruggleAdd
-      StruggleAdd = 10
-    EndIf
-    TotalPreyStruggle += StruggleAdd
-    TotalPreyDamage += DamageAdd
-    updateStruggle(i, PredStruggleLevel, PredDamageLevel, PreyData)
-    i = JFormMap.nextKey(Contents, i) as Actor
+    i = JFormMap.nextKey(Contents, i) as Form
   EndWhile
 
   If akTarget.Is3DLoaded() || akTarget == PlayerRef

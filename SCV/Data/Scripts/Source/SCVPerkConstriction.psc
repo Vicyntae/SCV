@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Constriction"
   Description = New String[4]
   Description[0] = "Increases stamina/magicka damage done to struggling prey."
   Description[1] = "Increases stamina/magicka damage done to struggling prey slightly."
@@ -26,5 +27,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Return True
   ElseIf aiPerkLevel == 3 && ArmorLevel >= 60 && Stamina >= 400 && SCVSet.dunMistwatchQST.GetStage() == 100
     Return True
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

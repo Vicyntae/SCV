@@ -3,7 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
-
+  Name = "Stalker"
   Description = New String[4]
   Description[0] = "Increases swallow success chance when sneaking and unseen by your prey."
   Description[1] = "Increases swallow success chance by 5% when sneaking and unseen by your prey."
@@ -31,5 +31,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     ElseIf aiPerkLevel == 3 && Sneak >= 75 && Level >= 35 && SCVSet.DB11.GetStage() == 200 ;Complete Hail Sithis!
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

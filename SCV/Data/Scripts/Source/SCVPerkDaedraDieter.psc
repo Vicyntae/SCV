@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Daedra Dieter"
   Description = New String[4]
   Description[0] = "Allows you to eat daedra."
   Description[1] = "Allows you to eat daedra."
@@ -31,5 +32,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     ElseIf aiPerkLevel == 3 && Conjure >= 60 && Level >= 30 && NumEatenPrey >= 50 && (SCVSet.DA07.GetStage() == 100 || SCVSet.DA07.GetStage() == 150 || SCVSet.DA07.GetStage() == 200) ;Complete Pieces of the Past
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

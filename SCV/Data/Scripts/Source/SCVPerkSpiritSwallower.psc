@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Spirit Swallower"
   Description = New String[4]
   Description[0] = "Allows you to eat ghosts."
   Description[1] = "Allows you to eat ghosts."
@@ -32,5 +33,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     ElseIf aiPerkLevel == 3 && Magicka >= 300 && Level >= 15 && NumEatenPrey >= 15 && SCVSet.MS06.GetStage() == 250  ;Complete The Wolf Queen Awakened.
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

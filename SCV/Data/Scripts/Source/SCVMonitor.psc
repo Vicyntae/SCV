@@ -194,19 +194,46 @@ EndFunction
 
 Function updateFullness()
   Int JF_Contents = SCVLib.getContents(MyActor, 8, ActorData)
-  ObjectReference ItemKey = JFormMap.nextKey(JF_Contents) as ObjectReference
+  Form ItemKey = JFormMap.nextKey(JF_Contents) as Form
   Int JI_StruggleValues = JIntMap.object()
-  While ItemKey
-    Int JM_Item = JFormMap.getObj(JF_Contents, ItemKey)
-    Int StoredType = JMap.getInt(JM_Item, "StoredItemType")
-    JIntMap.setFlt(JI_StruggleValues, StoredType, JIntMap.getFlt(JI_StruggleValues, StoredType) + JMap.getFlt(JM_Item, "DigestValue"))
-    ItemKey = JFormMap.nextKey(JF_Contents, ItemKey) as ObjectReference
-  EndWhile
+  Int JA_Remove
+  If ItemKey
+    While ItemKey
+      If ItemKey as Actor
+        Int JM_Item = JFormMap.getObj(JF_Contents, ItemKey)
+        Int StoredType = JMap.getInt(JM_Item, "StoredItemType")
+        JIntMap.setFlt(JI_StruggleValues, StoredType, JIntMap.getFlt(JI_StruggleValues, StoredType) + JMap.getFlt(JM_Item, "DigestValue"))
+      Else
+        If !JA_Remove
+          JA_Remove = JArray.object()
+        EndIf
+        JArray.addForm(JA_Remove, ItemKey)
+      EndIf
+      ItemKey = JFormMap.nextKey(JF_Contents, ItemKey) as Form
+    EndWhile
+  Else
+    Int f = JIntMap.nextKey(SCLSet.JI_ItemTypes)
+    While f
+      If JMap.hasKey(ActorData, "StruggleFullness" + f)
+        JMap.setFlt(ActorData, "StruggleFullness" + f, 0)
+      EndIf
+      f = JIntMap.nextKey(SCLSet.JI_ItemTypes, f)
+    EndWhile
+  EndIf
   Int i = JIntMap.nextKey(JI_StruggleValues)
   While i
     JMap.setFlt(ActorData, "StruggleFullness" + i, JIntMap.getFlt(JI_StruggleValues, i))
     i = JIntMap.nextKey(JI_StruggleValues, i)
   EndWhile
+  If JA_Remove
+    Int k = JArray.count(JA_Remove)
+    While k
+      k -= 1
+      JFormMap.removeKey(JF_Contents, JArray.getForm(JA_Remove, k))
+    EndWhile
+    JValue.zeroLifetime(JA_Remove)
+  EndIf
+  JValue.zeroLifetime(JI_StruggleValues)
   Parent.updateFullness()
 EndFunction
 

@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Strong Acid"
   Description = New String[4]
   Description[0] = "Deals health damage to struggling prey."
   Description[1] = "Deals slight health damage to struggling prey."
@@ -36,5 +37,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     If aiPerkLevel <= 3 && (abOverride || (DigestRate >= Req1 && NumFoodEaten >= Req2))
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

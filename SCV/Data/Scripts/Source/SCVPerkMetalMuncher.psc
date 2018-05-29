@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Metal Muncher"
   Description = New String[4]
   Description[0] = "Allows you to eat Dwemer Automatons."
   Description[1] = "Allows you to eat Dwemer Automatons."
@@ -32,5 +33,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     ElseIf aiPerkLevel == 3 && DigestRate >= 8 && Level >= 30 && NumEatenPrey >= 60 && (SCVSet.DA04.GetStage() == 100 || SCVSet.DA04.GetStage() == 105)  ;Complete (or fail) Quest Discerning the Transmundane
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

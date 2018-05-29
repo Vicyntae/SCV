@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Follower of Namira"
   Description = New String[4]
   Description[0] = "Allows you to eat humans."
   Description[1] = "Allows you to eat humans."
@@ -32,5 +33,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     ElseIf aiPerkLevel == 3 && Health >= 350 && Level >= 30 && NumEatenPrey >= 100 && JMap.getInt(TargetData, "SCV_ImportantNPCsEaten") >= 10
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

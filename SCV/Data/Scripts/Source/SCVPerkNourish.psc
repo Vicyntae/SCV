@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Nourishment"
   Description =  New String[4]
   Description[0] = "Gives health regeneration when one has digesting prey."
   Description[1] = "Gives slight health regeneration when one has digesting prey."
@@ -26,5 +27,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Return True
   ElseIf aiPerkLevel == 3 && ArmorLevel >= 60 && Magicka >= 400 && SCVSet.FreeformFalkreathQuest03B.GetStage() == 200  ;Complete Dark Ancestor
     Return True
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

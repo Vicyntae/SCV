@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Dragon Devourer"
   Description = New String[4]
   Description[0] = "Allows you to eat dragons."
   Description[1] = "Allows you to eat dragons."
@@ -33,5 +34,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     ElseIf aiPerkLevel == 3 && DragonsKilled >= 100 && Level >= 70 && NumEatenPrey >= 100 && CurrentDragonSouls >= 10
       Return True
     EndIf
+  EndIf
+EndFunction
+
+Bool Function isKnown(Actor akTarget)
+  If SCVLib.isPred(PlayerRef)
+    Return True
+  Else
+    Return False
   EndIf
 EndFunction

@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Expect Pushback"
   Description = New String[4]
   Description[0] = "Knock back enemies back after an enemy's failed devour attempt."
   Description[1] = "Staggers enemies after an enemy's failed devour attempt. Restores stamina."

@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Thrilling Struggle"
   Description = New String[4]
   Description[0] = "Increases stamina/magicka damage done to one's predator."
   Description[1] = "Increases stamina/magicka damage done to one's predator slightly."

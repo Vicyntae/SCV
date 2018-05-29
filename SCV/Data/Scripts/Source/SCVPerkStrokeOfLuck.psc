@@ -3,6 +3,7 @@ SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 
 Function Setup()
+  Name = "Stroke of Luck"
   Description = New String[4]
   Description[0] = "Gives a chance that a pred's devour attempt will fail."
   Description[1] = "Gives a 5% chance that a predator's devour attempt will fail."
