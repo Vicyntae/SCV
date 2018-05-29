@@ -1386,7 +1386,6 @@ Function updateFullness(Actor akTarget, Bool abNoVomit = False, Int aiTargetData
       If ItemKey as Actor
         Int JM_Item = JFormMap.getObj(JF_Contents, ItemKey)
         Int StoredType = JMap.getInt(JM_Item, "StoredItemType")
-        Note("Adding " + nameGet(ItemKey) + " To struggle fullness " + StoredType + ", DValue = " + JMap.getFlt(JM_Item, "DigestValue"))
         JIntMap.setFlt(JI_StruggleValues, StoredType, JIntMap.getFlt(JI_StruggleValues, StoredType) + JMap.getFlt(JM_Item, "DigestValue"))
       Else
         If !JA_Remove
