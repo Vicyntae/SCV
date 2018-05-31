@@ -113,6 +113,11 @@ Event OnPageReset(string a_page)
       AddTextOptionST("ChooseActorMessage_T", "$Choose an actor.", "")
     Endif
   ElseIf a_page == "$Actor Perks"
+    JI_PerkIndex = JValue.releaseAndRetain(JI_PerkIndex, JIntMap.object())
+    JM_PerkValues = JValue.releaseAndRetain(JM_PerkValues, JMap.object())
+    If !JM_SelectedPerkLevel
+      JM_SelectedPerkLevel = JValue.retain(JMap.object())
+    EndIf
     SetCursorFillMode(LEFT_TO_RIGHT)
     AddMenuOptionST("SelectedActor_M", "Actor", SelectedActorName);0
     AddEmptyOption()
