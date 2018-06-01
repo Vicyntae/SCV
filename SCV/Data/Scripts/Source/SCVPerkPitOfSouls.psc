@@ -11,10 +11,10 @@ Function Setup()
   Description[3] = "Soul gems can now capture souls two sizes bigger."
 
   Requirements = New String[4]
-  Requirements[0] = "Enables one to capture enemy souls."
-  Requirements[1] = "Enables one to capture enemy souls by storing soul gems in their stomach."
-  Requirements[2] = "Soul gems can now capture souls one size bigger."
-  Requirements[3] = "Soul gems can now capture souls two sizes bigger."
+  Requirements[0] = "No Requirements."
+  Requirements[1] = "Have at least 30 Enchanting, have at least Spirit Swallower Lv. 1, be at level 15, and have the perk 'Soul Squeezer'."
+  Requirements[2] = "Have at least 55 Enchanting, have at least Spirit Swallower Lv. 2, be at level 30, capture at least 30 souls by devouring them, and assist a wizard in his studies into the Dwemer disappearance."
+  Requirements[3] = "Have at least 90 Enchanting, be at level 50, capture at least 70 souls by devouring them, and become a master Conjurer."
 EndFunction
 
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
@@ -22,7 +22,7 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Return True
   EndIf
   Int TargetData = SCVLib.getData(akTarget, aiTargetData)
-  Int Enchant = akTarget.GetActorValue("Enchanting") as Int
+  Int Enchant = PlayerRef.GetActorValue("Enchanting") as Int
   Int SpiritLevel = SCVLib.getCurrentPerkLevel(akTarget, "SCV_SpiritSwallower")
   Int Level = akTarget.GetLevel()
   Int NumSoulsCaptured = JMap.getInt(TargetData, "SCV_SoulsCaptured")

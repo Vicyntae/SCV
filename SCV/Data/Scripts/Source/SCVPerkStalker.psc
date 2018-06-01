@@ -10,11 +10,11 @@ Function Setup()
   Description[2] = "Increases swallow success chance by another 5% when sneaking and unseen by your prey. Increases movement speed slightly while you have struggling prey and are sneaking."
   Description[3] = "Increases swallow success chance by yet another 5% when sneaking and unseen by your prey. Increases movement speed significantly while you have struggling prey and are sneaking."
 
-  Description = New String[4]
-  Description[0] = "No Requirements"
-  Description[1] = "Have at least 25 Sneak, be at least level 10, and have the ability to cast spells quietly."
-  Description[2] = "Have at least 50 Sneak, be at least level 25, and join with the Nightingales."
-  Description[3] = "Have at least 75 Sneak, be at least level 35 and pull off the greatest assassination in all of Tamriel."
+  Requirements = New String[4]
+  Requirements[0] = "No Requirements."
+  Requirements[1] = "Have at least 25 Sneak, be at least level 10, and have the ability to cast spells quietly."
+  Requirements[2] = "Have at least 50 Sneak, be at least level 25, and join with the Nightingales."
+  Requirements[3] = "Have at least 75 Sneak, be at least level 35 and pull off the greatest assassination in all of Tamriel."
 EndFunction
 
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)

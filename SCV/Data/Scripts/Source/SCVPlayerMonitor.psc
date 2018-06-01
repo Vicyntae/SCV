@@ -86,7 +86,7 @@ Event OnKeyDown(int keyCode)
           EndIf
         ElseIf Option == 2
           Float MaxWeight = SCLib.WF_getSolidMaxInsert(MyActor, ActorData)
-          Int NumItems = SCLib.countItemTypes(MyActor, 4, True)
+          Int NumItems = SCLib.countItemTypes(MyActor, 4, True) + SCLib.countItemTypes(MyActor, 3, True)
           Int MaxNumItems = SCLib.WF_getSolidMaxNumItems(MyActor, ActorData)
           Float DigestValue = SCLib.genDigestValue(CurrentBase)
           If DigestValue <= MaxWeight && NumItems < MaxNumItems

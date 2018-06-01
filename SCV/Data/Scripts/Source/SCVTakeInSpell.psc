@@ -154,7 +154,7 @@ Bool Function checkSpecificConditions()
   Else
     Float DigestValue = SCVLib.genDigestValue(Prey, True)
     Float MaxWeight = SCVLib.WF_getSolidMaxInsert(Pred, PredData)
-    Int NumItems = SCVLib.countItemTypes(Pred, 4, True)
+    Int NumItems = SCVLib.countItemTypes(Pred, 4, True) + SCVLib.countItemTypes(Pred, 3, True)
     Int MaxNumItems = SCVLib.WF_getSolidMaxNumItems(Pred, PredData)
     If DigestValue > MaxWeight || NumItems >= MaxNumItems
       Notice("Failed. Pred cannot fit prey.")
