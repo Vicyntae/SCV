@@ -171,6 +171,11 @@ Event OnPageReset(string a_page)
     SetCursorPosition(0)
     AddHeaderOption("General Settings")
     AddHeaderOption("")
+    AddToggleOptionST("EnableFollower_TOG", "$Enable Follower Tracking", SCLSet.EnableFollowerTracking)
+    AddToggleOptionST("EnableUnique_TOG", "$Enable Unique Actor Tracking", SCLSet.EnableUniqueTracking)
+    AddToggleOptionST("EnableNPC_TOG", "$Enable NPC Tracking", SCLSet.EnableNPCTracking)
+    AddSliderOptionST("MaxNumTracking_S", "$Max Num Actors Tracked", SCLSet.MaxActorTracking, "{0} Actors")
+
     AddToggleOptionST("EnableMPreds_TOG", "Enable Male NPC Predators", SCVSet.EnableMPreds)
     AddToggleOptionST("EnableFPreds_TOG", "Enable Female NPC Predators", SCVSet.EnableFPreds)
 
