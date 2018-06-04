@@ -231,6 +231,7 @@ Formlist Property SCV_InVoreActionList Auto ; Prevents any vore actions if they 
 Faction Property SCV_FACT_OVPredBlocked Auto
 Faction Property SCV_FACT_AVPredBlocked Auto
 Faction Property SCV_FACT_PreyProtected Auto
+Faction Property SCV_FACT_Animated Auto
 
 ReferenceAlias Property SCV_FollowPred Auto
 

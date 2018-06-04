@@ -28,6 +28,7 @@ EndProperty
 
 Function resetThread()
   UnregisterForUpdate()
+  removeFromAnimatingFaction(Actors)
   Actors = New Actor[1]
   AnimType = ""
   Situation = ""
@@ -46,10 +47,29 @@ EndFunction
 Function setThread(Actor[] akActors, String asType, String asSituation)
   thread_queued = True
   Actors = akActors
+  addToAnimatingFaction(Actors)
   ;Note("Thread being set. Pred = " + Actors[0].GetLeveledActorBase().GetName() + ", Prey = " + Actors[1].GetLeveledActorBase().GetName())
   ;Note("Actor 01" + SCVLib.nameGet(Actors[0]))
   AnimType = asType
   Situation = asSituation
+EndFunction
+
+Function addToAnimatingFaction(Actor[] akActors)
+  Faction Fact = SCVSet.SCV_FACT_Animated
+  Int i = akActors.length
+  While i
+    i -= 1
+    akActors[i].SetFactionRank(Fact, 1)
+  EndWhile
+EndFunction
+
+Function removeFromAnimatingFaction(Actor[] akActors)
+  Faction Fact = SCVSet.SCV_FACT_Animated
+  Int i = akActors.length
+  While i
+    i -= 1
+    akActors[i].SetFactionRank(Fact, -1)
+  EndWhile
 EndFunction
 
 Event OnAnimPrep(Int aiThreadID)
@@ -82,7 +102,7 @@ Event OnAnimStart(Int aiThreadID)
     EndIf
     If (!i && JM_AnimInfo == 0) || JM_AnimInfo == -1
       ;Note("No Animations found! Canceling Thread")
-      If AnimType == "Oral"
+      ;/If AnimType == "Oral"
         Actors[0].Say(SCVSet.SCV_SwallowSound)
       ElseIf AnimType == "Anal"
         Actors[0].Say(SCVSet.SCV_TakeInSound)
@@ -97,7 +117,7 @@ Event OnAnimStart(Int aiThreadID)
           EndIf
         EndIf
         k += 1
-      EndWhile
+      EndWhile/;
       resetThread()
       Return
     EndIf

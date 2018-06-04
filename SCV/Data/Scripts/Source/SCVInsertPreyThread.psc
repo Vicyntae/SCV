@@ -80,9 +80,9 @@ Event OnInsertPreyCall(Int aiID)
     SCVSet.SCV_InVoreActionList.AddForm(Prey)
     ;Play animation here
     ;Note("Anim Recall = " + AnimRecall)
-    If AnimRecall > 0
+    ;/If AnimRecall > 0
       SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
-    EndIf
+    EndIf/;
     Int iModType = ItemType
     If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
       If ItemType == 3 ;|| ItemType == 5
@@ -113,7 +113,8 @@ Event OnInsertPreyCall(Int aiID)
       EndIf
     Else
       ;Notice("Prey is struggling. Inserting into struggle contents")
-      If AnimRecall > 0
+      ;If AnimRecall > 0
+      If Pred.IsInFaction(SCVSet.SCV_FACT_Animated) || Prey.IsInFaction(SCVSet.SCV_FACT_Animated)
         JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8, afDigestValueOverRide = DigestValue, abMoveNow = False)
       Else
         If Prey == PlayerRef
@@ -150,13 +151,19 @@ Event OnInsertPreyCall(Int aiID)
     If ItemType == 1 || ItemType == 2
       PlayerThoughtDB(Prey, "SCVPreySwallowed")
       Debug.Notification(nameGet(Pred) + " is eating " + nameGet(Prey) + "!")
-      If AnimRecall == 0
+      ;If AnimRecall == 0
+      If Pred.IsInFaction(SCVSet.SCV_FACT_Animated) || Prey.IsInFaction(SCVSet.SCV_FACT_Animated)
+        ;Pass
+      Else
         Pred.Say(SCVSet.SCV_SwallowSound)
       EndIf
     ElseIf ItemType == 3 || ItemType == 4
       PlayerThoughtDB(Prey, "SCVPreyTakenIn")
       Debug.Notification(nameGet(Pred) + " is taking in " + nameGet(Prey) + "!")
-      If AnimRecall == 0
+      ;If AnimRecall == 0
+      If Pred.IsInFaction(SCVSet.SCV_FACT_Animated) || Prey.IsInFaction(SCVSet.SCV_FACT_Animated)
+        ;Pass
+      Else
         Pred.Say(SCVSet.SCV_TakeInSound)
       EndIf
     EndIf

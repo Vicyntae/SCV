@@ -60,7 +60,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
   Actors[1] = Prey
   If Setting_RunAnim
     String Situation
-    If !Pred.IsDetectedBy(Prey) && SCVLib.getCurrentPerkLevel(Pred, "SCV_Stalker") >= 1
+    If Pred.IsSneaking() && !Pred.IsDetectedBy(Prey) && SCVLib.getCurrentPerkLevel(Pred, "SCV_Stalker") >= 1
       Situation = "Stealth"
     ElseIf Pred.IsInCombat()
       Situation = "Combat"
@@ -167,19 +167,19 @@ EndFunction
 
 Function runVore()
   Int Type
-  If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
+  ;/If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
     If Setting_Lethal
       Type = 1
     Else
       Type = 2
     EndIf
-  Else
+  Else/;
     If Setting_Lethal
       Type = 3
     Else
       Type = 4
     EndIf
-  EndIf
+  ;EndIf
 
   If Prey.IsDead() || Prey.IsUnconscious()
     Notice("Success. Prey is dead or unconscious")
@@ -192,6 +192,7 @@ Function runVore()
     If SCVLib.allowsFriendlyAV(Prey, PreyData)
       If SCVLib.allowsFriendlyLethalAV(Prey, PreyData) && Setting_Lethal
         Notice("Success. Player is allowed to eat and digest friendly NPC.")
+        SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
         SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
         ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
         ;Pred.PlayIdle(SCVSet.IdleStop)
@@ -199,6 +200,7 @@ Function runVore()
         Return
       ElseIf !Setting_Lethal
         Notice("Success. Player is allowed to eat friendly NPC.")
+        SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
         SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
         ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
         ;Pred.PlayIdle(SCVSet.IdleStop)
@@ -213,6 +215,7 @@ Function runVore()
   ElseIf Prey == PlayerRef
     If SCVLib.isFriendlyAVPred(Pred, PredData)
       Notice("Success. Player has allowed this actor to eat them.")
+      SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
       SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
       ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
       ;Pred.PlayIdle(SCVSet.IdleStop)
@@ -223,6 +226,7 @@ Function runVore()
     If SCVLib.isFriendlyAVPred(Pred, PreyData) && Prey.GetFactionReaction(Pred) >= 2
       If SCVLib.allowsFriendlyAV(Prey, PreyData)
         If SCVLib.allowsFriendlyLethalAV(Prey, PreyData) && Setting_Lethal
+          SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
           SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
           ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
           ;Pred.PlayIdle(SCVSet.IdleStop)

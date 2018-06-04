@@ -59,7 +59,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
   Actors[1] = Prey
   If Setting_RunAnim
     String Situation
-    If !Pred.IsDetectedBy(Prey) && SCVLib.getCurrentPerkLevel(Pred, "SCV_Stalker") >= 1
+    If Pred.IsSneaking() && !Pred.IsDetectedBy(Prey) && SCVLib.getCurrentPerkLevel(Pred, "SCV_Stalker") >= 1
       Situation = "Stealth"
     ElseIf Pred.IsInCombat()
       Situation = "Combat"
@@ -172,12 +172,14 @@ Function runVore()
       If SCVLib.allowsFriendlyLethalOV(Prey, PreyData) && Setting_Lethal
         Notice("Success. Player is allowed to eat and digest friendly NPC.")
         ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
+        SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
         SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
         Dispel()
         Return
       Else
         Notice("Success. Player is allowed to eat friendly NPC.")
         ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
+        SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
         SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
         Dispel()
         Return
@@ -192,6 +194,7 @@ Function runVore()
     If SCVLib.isFriendlyOVPred(Pred, PredData)
       Notice("Success. Player has allowed this actor to eat them.")
       ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
+      SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
       SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
       Dispel()
       Return
@@ -201,11 +204,13 @@ Function runVore()
       If SCVLib.allowsFriendlyOV(Prey, PreyData)
         If SCVLib.allowsFriendlyLethalOV(Prey, PreyData) && Setting_Lethal
           ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
+          SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
           SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
           Dispel()
           Return
         Else
           ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
+          SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
           SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
           Dispel()
           Return
@@ -228,6 +233,7 @@ Function runVore()
     PredStaminaRestore *= self.GetMagnitude()
     Pred.RestoreActorValue("Stamina", PredStaminaRestore)
     Prey.RestoreActorValue("Stamina", PreyStaminaRestore)
+    SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
     SCVLib.insertPrey(Pred, Prey, Type, False, AnimRecall)
   Else
     Notice("Failed. Dice roll did not pass.")
