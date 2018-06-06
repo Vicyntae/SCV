@@ -17,6 +17,10 @@ Function Setup()
   Requirements[3] = "Have a Digestion Rate of at least 20 and digest at least 1200 units of food."
 EndFunction
 
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   Int TargetData = SCVLib.getData(akTarget, aiTargetData)
   If SCVLib.isPred(akTarget)

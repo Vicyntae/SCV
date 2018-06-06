@@ -15,6 +15,11 @@ Function Setup()
   Requirements[2] = "Have at least 40 Light Armor, have at least 300 Magicka, and assist the wizard of the Blue Palace."
   Requirements[3] = "Have at least 60 Light Armor, have at least 400 Magicka and put an end to a sealed evil in Falkreath."
 EndFunction
+
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   If abOverride && aiPerkLevel >= 1 && aiPerkLevel <= 3
     Return True

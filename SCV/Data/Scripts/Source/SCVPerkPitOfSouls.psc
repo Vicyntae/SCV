@@ -17,6 +17,10 @@ Function Setup()
   Requirements[3] = "Have at least 90 Enchanting, be at level 50, capture at least 70 souls by devouring them, and become a master Conjurer."
 EndFunction
 
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   If abOverride && aiPerkLevel >= 1 && aiPerkLevel <= 3
     Return True

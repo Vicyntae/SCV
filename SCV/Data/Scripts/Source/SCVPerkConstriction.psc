@@ -15,6 +15,11 @@ Function Setup()
   Requirements[2] = "Have at least 40 Heavy Armor, have at least 300 Stamina, and help a young woman discover the truth about her companion."
   Requirements[3] = "Have at least 60 Heavy Armor, have at least 400 Stamina and help set a man's wife free."
 EndFunction
+
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   If abOverride && aiPerkLevel >= 1 && aiPerkLevel <= 3
     Return True

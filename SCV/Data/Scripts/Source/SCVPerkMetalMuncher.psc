@@ -17,6 +17,10 @@ Function Setup()
   Requirements[3] = "Have a digestion rate of at least 8, be at level 30, consume 60 Dwemer Automatons, and unlock the container with the heart of a god."
 EndFunction
 
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   If abOverride && aiPerkLevel >= 1 && aiPerkLevel <= 3
     Return True

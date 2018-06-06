@@ -17,6 +17,11 @@ Function Setup()
   Requirements[2] = "Be eaten at least 5 times and survive, and put an end to the man who sealed himself away for a chance at power."
   Requirements[3] = "Be eaten at least 15 times and survive, and help capture a powerful beast."
 EndFunction
+
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   If abOverride && aiPerkLevel >= 1 && aiPerkLevel <= 3
     Return True

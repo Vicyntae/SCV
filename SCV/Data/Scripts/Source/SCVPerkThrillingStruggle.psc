@@ -16,6 +16,10 @@ Function Setup()
   Requirements[3] = "Have at least 700 points of energy, a resistance skill of at least 60, and cause an incident at sea."
 EndFunction
 
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   If abOverride && aiPerkLevel >= 1 && aiPerkLevel <= 3
     Return True

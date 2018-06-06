@@ -15,6 +15,10 @@ Function Setup()
   Requirements[3] = "Take up at least 800 units in a prey's stomach, be at level 35, and have a resistance skill of at least 50."
 EndFunction
 
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   If abOverride && aiPerkLevel >= 1 && aiPerkLevel <= 3
     Return True

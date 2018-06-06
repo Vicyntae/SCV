@@ -17,6 +17,10 @@ Function Setup()
   Requirements[3] = "Have at least 75 Sneak, be at least level 35 and pull off the greatest assassination in all of Tamriel."
 EndFunction
 
+Function reloadMaintenence()
+  Setup()
+EndFunction
+
 Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTargetData = 0)
   If abOverride && aiPerkLevel >= 1 && aiPerkLevel <= 3
     Return True
