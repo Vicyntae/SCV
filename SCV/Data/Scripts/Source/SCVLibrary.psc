@@ -1476,7 +1476,7 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
     EndIf
 
     Int iModType = StoredType
-    If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
+    If SCVSet.AVDestinationChoice == 1
       If StoredType == 3 ;|| StoredType == 5
         iModType = 1
       ElseIf StoredType == 4 ;|| StoredType == 7
@@ -2054,7 +2054,7 @@ Function handleActorMainMenu(Actor akTarget, Int aiOption, Int aiMode)
     EndIf
   ElseIf aiOption == 7
     Int Option = 1
-    If SCLSet.WF_Active
+    If getCurrentPerkLevel(akTarget, "WF_BasementStorage") >= 1
       Option = SCLSet.SCL_MES_WF_StorageChoice.Show()
     EndIf
     If Option == 1

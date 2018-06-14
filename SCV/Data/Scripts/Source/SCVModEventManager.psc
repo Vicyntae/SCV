@@ -8,7 +8,7 @@ Bool SCLResetted = False
 Event OnSCLReset()
   SCLResetted = True
 EndEvent
-
+SCVEssentialTracker Property SCVEssential Auto
 SCVLibrary Property SCVLib Auto
 SCVSettings Property SCVSet Auto
 SCLSettings Property SCLSet Auto
@@ -131,8 +131,25 @@ EndEvent
 
 Event OnDigestItemFinish(Form akEater, Form akFood, Float afDigestValue)
   If akFood as Actor && akEater as Actor
+    If (akFood as Actor).IsEssential()
+      SCVEssential.trackActor(akFood as Actor)
+    Else
+      Int PerkLevel = SCVLib.getCurrentPerkLevel(akEater as Actor, "SCVFriendlyFood")
+      Bool Companion = (akFood as Actor).IsInFaction(SCLSet.CurrentFollowerFaction) || (akFood as Actor).IsInFaction(SCLSet.PotentialFollowerFaction)
+      Bool isFriendly = (akFood as Actor).GetRelationshipRank(akEater as Actor) >= 2
+      If Companion && PerkLevel >= 3
+        (akFood as Actor).Kill()
+      ElseIf isFriendly && PerkLevel >= 4
+        (akFood as Actor).Kill()
+      ElseIf PerkLevel >= 5
+        (akFood as Actor).Kill()
+      Else
+        (akFood as Actor).Kill(akEater as Actor)
+      EndIf
+    EndIf
+
     SCVLib.transferInventory(akEater as Actor, akFood as Actor, 1)
-    SCVLib.transferSCLItems(akEater as Actor, akFood as Actor, 1)
+    SCVLib.transferSCLItems(akEater as Actor, akFood as Actor, 1, 2)
     If SCVLib.hasGems(akEater as Actor)
       SCVLib.fillGem(akEater as Actor, akFood as Actor)
     EndIf
@@ -168,7 +185,6 @@ Event OnDigestItemFinish(Form akEater, Form akFood, Float afDigestValue)
         EndIf
       EndIf
     EndIf
-
   EndIf
 EndEvent
 

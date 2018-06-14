@@ -23,7 +23,7 @@ Actor Property TransferTarget
 EndProperty
 Int Property Type
   Function Set(Int a_val)
-    If !SCVLib.SCLSet.WF_Active || SCVLib.SCVSet.AVDestinationChoice == 1
+    If SCVLib.SCVSet.AVDestinationChoice == 1
       If a_val == 3 ;|| a_val == 5
         a_val == 1
       ElseIf a_val == 4 ;|| a_val == 7

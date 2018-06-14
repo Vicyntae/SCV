@@ -11,17 +11,43 @@ SCVLibrary Property SCVLib Auto
 SCLSettings Property SCLSet Auto
 SCVSettings Property SCVSet Auto
 Actor property PlayerRef Auto
+
+Faction Property PotentialFollowerFaction Auto
+Faction Property CurrentFollowerFaction Auto
 Formlist Property SCV_InVoreActionList Auto ; Prevents any vore actions if they are already in one
 
-Keyword Property ActorTypeDwarven Auto
-Keyword Property ActorTypeDragon Auto
-Keyword Property ActorTypeGhost Auto
-Keyword Property ActorTypeDaedra Auto
-Keyword Property ActorTypeUndead Auto
+SCLPerkBase Property SCV_ExpectPushback Auto
+
+SCLPerkBase Property SCLAllowOverflow Auto
+
+SCLPerkBase Property SCV_FriendlyFood Auto
+
+SCLPerkBase Property SCV_StrokeOfLuck Auto
+SCLPerkBase Property SCV_IntenseHunger Auto
+SCLPerkBase Property SCV_Stalker Auto
+
+SCLPerkBase Property SCV_FollowerofNamira Auto
 Keyword Property ActorTypeNPC Auto
+
+SCLPerkBase Property SCV_MetalMuncher Auto
+Keyword Property ActorTypeDwarven Auto
+
+SCLPerkBase Property SCV_DragonDevourer Auto
+Keyword Property ActorTypeDragon Auto
+
+SCLPerkBase Property SCV_SpiritSwallower Auto
+Keyword Property ActorTypeGhost Auto
+
+SCLPerkBase Property SCV_DaedraDieter Auto
+Keyword Property ActorTypeDaedra Auto
+
+SCLPerkBase Property SCV_ExpiredEpicurian Auto
+Keyword Property ActorTypeUndead Auto
 
 Bool Property Setting_Lethal = False Auto ;Will the prey be digested or stored afterwards (Type 1 or Type 2?)
 Bool Property Setting_RunAnim = True Auto
+
+Float ChanceResult = -1.0
 Actor _Pred
 Actor Property Pred
   Actor Function Get()
@@ -51,10 +77,22 @@ String Property PreyName Auto
 Int Property PreyData Auto
 
 Int AnimRecall = 0
+
+Event OnChanceCall()
+  Float Result = calculateChance()
+  If Result < 0
+    Result = 0
+  EndIf
+  ChanceResult = Result
+EndEvent
+
 Event OnEffectStart(Actor akTarget, Actor akCaster)
   Pred = akCaster
   Prey = akTarget
 
+  RegisterForModEvent("SCV_VoreChance" + PreyData, "OnChanceCall")
+  Int Handle = ModEvent.Create("SCV_VoreChance" + PreyData)
+  ModEvent.Send(Handle)
   Actor[] Actors = New Actor[2]
   Actors[0] = Pred
   Actors[1] = Prey
@@ -137,12 +175,12 @@ Bool Function checkSpecificConditions()
     Return False
   EndIf/;
 
-  If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
+  If SCVSet.AVDestinationChoice == 1
     Float DigestValue = SCVLib.genDigestValue(Prey, True)
     Float Fullness = JMap.getFlt(PredData, "STFullness")
     Float Max = SCVLib.getMax(Pred, PredData)
     If (Fullness + DigestValue > Max) || \
-      (SCVLib.getCurrentPerkLevel(Pred, "SCV_RemoveLimits") >= 1 && SCVLib.getCurrentPerkLevel(Pred, "SCLAllowOverflow") >= 1 && Fullness > Max)
+      (SCLAllowOverflow.getFirstPerkLevel(Pred) == 0 && Fullness < Max)
       If !SCLSet.GodMode1
         Notice("Failed. Pred cannot fit prey.")
         PlayerThoughtDB(Pred, "SCVPredCantEatFull")
@@ -167,7 +205,7 @@ EndFunction
 
 Function runVore()
   Int Type
-  ;/If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
+  ;/If SCVSet.AVDestinationChoice == 1
     If Setting_Lethal
       Type = 1
     Else
@@ -182,6 +220,59 @@ Function runVore()
   ;EndIf
 
   If Prey.IsDead() || Prey.IsUnconscious()
+    If ChanceResult < 0
+      While ChanceResult < 0
+        Utility.WaitMenuMode(0.1)
+      EndWhile
+    EndIf
+    If ChanceResult > 0
+      Notice("Success. Prey is dead or unconscious")
+      ;Pred.PlayIdle(SCVSet.SCV_GrabSuccessIdle)
+      SCVLib.insertPrey(Pred, Prey, Type, False, 0)
+      SCVSet.AnimationThreadHandler.sendCancelEvent(AnimRecall)
+      ;Play Dead body eat here.
+    EndIf
+    Dispel()
+    Return
+  EndIf
+
+  Int FriendlyPerkLevel = SCV_FriendlyFood.getFirstPerkLevel(Pred)
+  If FriendlyPerkLevel >= 5
+    SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
+    SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
+    Dispel()
+    Return
+  ElseIf Prey.IsInFaction(PotentialFollowerFaction) || Prey.IsInFaction(CurrentFollowerFaction)
+    If Setting_Lethal && FriendlyPerkLevel >= 3
+      SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
+      SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
+      Dispel()
+      Return
+    ElseIf FriendlyPerkLevel >= 1
+      SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
+      SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
+      Dispel()
+      Return
+    ElseIf !Pred.IsSneaking() || Pred.IsDetectedBy(Prey)
+      Prey.SendAssaultAlarm()
+    EndIf
+  ElseIf Prey.GetRelationshipRank(Pred) >= 2
+    If Setting_Lethal && FriendlyPerkLevel >= 4
+      SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
+      SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
+      Dispel()
+      Return
+    ElseIf FriendlyPerkLevel >= 2
+      SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
+      SCVLib.insertPrey(Pred, Prey, Type, True, AnimRecall)
+      Dispel()
+      Return
+    ElseIf !Pred.IsSneaking() || Pred.IsDetectedBy(Prey)
+      Prey.SendAssaultAlarm()
+    EndIf
+  EndIf
+
+  ;/If Prey.IsDead() || Prey.IsUnconscious()
     Notice("Success. Prey is dead or unconscious")
       SCVLib.insertPrey(Pred, Prey, Type, False, 0)
       SCVSet.AnimationThreadHandler.sendCancelEvent(AnimRecall)
@@ -241,11 +332,18 @@ Function runVore()
         EndIf
       EndIf
     EndIf
+  EndIf/;
+
+  ;Float Chance = calculateChance()
+  If ChanceResult < 0
+    While ChanceResult < 0
+      Utility.WaitMenuMode(0.1)
+    EndWhile
   EndIf
-  Float Chance = calculateChance()
+
   Float Success = Utility.RandomFloat()
-  Notice("Rolling Dice. Chance = " + Success + "/" + Chance)
-  If Success < Chance
+  Notice("Rolling Dice. Chance = " + Success + "/" + ChanceResult)
+  If Success < ChanceResult
     ;Hide prey to make it seem that they disappeared immediately
     ;Begin animation here
     ;/SCVSet.SCV_Alpha0Spell01.Cast(Prey)
@@ -256,6 +354,7 @@ Function runVore()
     PredStaminaRestore *= GetMagnitude()
     Pred.RestoreActorValue("Stamina", PredStaminaRestore)
     Prey.RestoreActorValue("Stamina", PreyStaminaRestore)
+    SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
     SCVLib.insertPrey(Pred, Prey, Type, AnimRecall)
   Else
     Notice("Failed. Dice roll did not pass.")
@@ -263,7 +362,7 @@ Function runVore()
     ;Pred.PlayIdle(SCVSet.SCV_GrabFailIdle)
     ;Pred.PlayIdle(SCVSet.IdleStop)
     JMap.setInt(PreyData, "SCV_StrokeOfLuckAvoidVore", JMap.getInt(PreyData, "SCV_StrokeOfLuckAvoidVore") + 1)
-    Int PerkRank = SCVLib.getCurrentPerkLevel(Prey, "SCV_ExpectPushback")
+    Int PerkRank = SCV_ExpectPushback.getFirstPerkLevel(Prey)
     Notice("Chance failed, checking perks, PerkRank = " + PerkRank)
     Float Mult = 1
     If PerkRank >= 3
@@ -304,7 +403,7 @@ Float Function calculateChance()
   Chance *= GetMagnitude()
   Notice("Initial Generated chance = " + Chance)
 
-  Int LuckPerk = SCVLib.getTotalPerkLevel(Prey, "SCV_StrokeOfLuck")
+  Int LuckPerk = JMap.getInt(PredData, "SCV_StrokeOfLuck")
   If LuckPerk > 0
     Float LuckChance = Utility.RandomFloat()
     Notice("Luck Perk = " + LuckPerk + ", Chance = " + LuckChance)
@@ -321,7 +420,7 @@ Float Function calculateChance()
 
   ;Stalker Perk
   If Pred.IsSneaking() && !Pred.IsDetectedBy(Prey)
-    Int StealthPerk = SCVLib.getTotalPerkLevel(Pred, "SCV_Stalker")
+    Int StealthPerk = JMap.getInt(PredData, "SCV_Stalker")
     Notice("Stealth perk valid. Perk level = " + StealthPerk)
     If StealthPerk
       Chance *= (1 + (StealthPerk/20))
@@ -334,7 +433,7 @@ Float Function calculateChance()
   EndIf
 
   ;HungerPerks
-  Int Hunger = SCVLib.getTotalPerkLevel(Pred, "SCV_IntenseHunger")
+  Int Hunger = JMap.getInt(PredData, "SCV_IntenseHunger")
   If Hunger
     Notice("Hunger perk valid. Perk level = " + Hunger)
     Chance *= (1 + (Hunger / 20))
@@ -342,8 +441,8 @@ Float Function calculateChance()
 
   Race PreyRace = Prey.GetRace()
   If PreyRace.HasKeyword(ActorTypeNPC)
-    Int TruePerkRank = SCVLib.getCurrentPerkLevel(Pred, "SCV_FollowerofNamira")
-    Int PerkRank = SCVLib.getTotalPerkLevel(Pred, "SCV_FollowerofNamira")
+    Int TruePerkRank = SCV_FollowerofNamira.getFirstPerkLevel(Pred)
+    Int PerkRank = JMap.getInt(PredData, "SCV_FollowerofNamira")
     If TruePerkRank < 1
       Notice("Actor Type NPC. Perk not taken. Returning 0")
       PlayerThought(Pred, "They're human! I can't eat them!", "They're human! You can't eat them!", "They're human! " + PredName + " can't eat them!")
@@ -354,8 +453,8 @@ Float Function calculateChance()
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeDragon)
-    Int TruePerkRank = SCVLib.getCurrentPerkLevel(Pred, "SCV_DragonDevourer")
-    Int PerkRank = SCVLib.getTotalPerkLevel(Pred, "SCV_DragonDevourer")
+    Int TruePerkRank = SCV_DragonDevourer.getFirstPerkLevel(Pred)
+    Int PerkRank = JMap.getInt(PredData, "SCV_DragonDevourer")
     If TruePerkRank < 1
       Notice("Actor Type Dragon. Perk not taken. Returning 0")
       Notice(PreyName + " is a Dragon! " + PredName + " does not have perk! Returning 0")
@@ -367,8 +466,8 @@ Float Function calculateChance()
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeDwarven)
-    Int TruePerkRank = SCVLib.getCurrentPerkLevel(Pred, "SCV_MetalMuncher")
-    Int PerkRank = SCVLib.getTotalPerkLevel(Pred, "SCV_MetalMuncher")
+    Int TruePerkRank = SCV_MetalMuncher.getFirstPerkLevel(Pred)
+    Int PerkRank = JMap.getInt(PredData, "SCV_MetalMuncher")
     If TruePerkRank < 1
       Notice("Actor Type Dwarven. Perk not taken. Returning 0")
       Notice(PreyName + " is automaton! " + PredName + " does not have perk! Returning 0")
@@ -380,8 +479,8 @@ Float Function calculateChance()
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeGhost)
-    Int TruePerkRank = SCVLib.getCurrentPerkLevel(Pred, "SCV_SpiritSwallower")
-    Int PerkRank = SCVLib.getTotalPerkLevel(Pred, "SCV_SpiritSwallower")
+    Int TruePerkRank = SCV_SpiritSwallower.getFirstPerkLevel(Pred)
+    Int PerkRank = JMap.getInt(PredData, "SCV_SpiritSwallower")
     If TruePerkRank < 1
       Notice("Actor Type Ghost. Perk not taken. Returning 0")
       Notice(PreyName + " is a Ghost! " + PredName + " does not have perk! Returning 0")
@@ -393,8 +492,8 @@ Float Function calculateChance()
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeUndead)
-    Int TruePerkRank = SCVLib.getCurrentPerkLevel(Pred, "SCV_ExpiredEpicurian")
-    Int PerkRank = SCVLib.getTotalPerkLevel(Pred, "SCV_ExpiredEpicurian")
+    Int TruePerkRank = SCV_ExpiredEpicurian.getFirstPerkLevel(Pred)
+    Int PerkRank = JMap.getInt(PredData, "SCV_ExpiredEpicurian")
     If TruePerkRank < 1
       Notice("Actor Type Undead. Perk not taken. Returning 0")
       Notice(PreyName + " is Undead! " + PredName + " does not have perk! Returning 0")
@@ -406,8 +505,8 @@ Float Function calculateChance()
   EndIf
 
   If PreyRace.HasKeyword(ActorTypeDaedra)
-    Int TruePerkRank = SCVLib.getCurrentPerkLevel(Pred, "SCV_DaedraDieter")
-    Int PerkRank = SCVLib.getTotalPerkLevel(Pred, "SCV_DaedraDieter")
+    Int TruePerkRank = SCV_DaedraDieter.getFirstPerkLevel(Pred)
+    Int PerkRank = JMap.getInt(PredData, "SCV_DaedraDieter")
     If TruePerkRank < 1
       Notice("Actor Type Daedra. Perk not taken. Returning 0")
       Notice(PreyName + " is Daedra! " + PredName + " does not have perk! Returning 0")

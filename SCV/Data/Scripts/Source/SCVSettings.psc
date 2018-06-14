@@ -241,6 +241,7 @@ SCVInsertPreyThreadManager Property InsertPreyThreadManager Auto
 SCVProcessPreyThreadManager Property ProcessPreyThreadManager Auto
 SCVAnimationThreadHandler Property AnimationThreadHandler Auto
 SCVInsertItemsContainer Property SCV_InsertItemsChest Auto
+SCVEssentialTracker Property SCVEssential Auto
 
 ;AI Package Spells
 Spell Property SCV_AIFindOVPreySpell01a Auto

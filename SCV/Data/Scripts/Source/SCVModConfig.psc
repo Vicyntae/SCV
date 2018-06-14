@@ -8,6 +8,7 @@ SCVDatabase Property SCVData Auto
 SCVSettings Property SCVSet Auto
 SCVLibrary Property SCVLib Auto
 
+Form[] EssentialPreyList
 ;Events ************************************************************************
 Event OnPageReset(string a_page)
   If !MCMInitialized
@@ -46,19 +47,18 @@ Event OnPageReset(string a_page)
       AddTextOptionST("DisplayNumStored_T", "$Num Items Stored", SCLib.countItemTypes(SelectedActor, 2, True))
       AddTextOptionST("DisplayFullness_T", "$Fullness", JMap.getFlt(AD, "STFullness"))  ;12
       AddTextOptionST("DisplayMax_T", "$Max Capacity", SCLib.getMax(S)) ;14
-      If SCLSet.WF_Active
-        If SCLSet.DebugEnable
-          AddSliderOptionST("WF_EditMaxStorage_S", "$Set Max Num Items To Stow", SCLib.WF_getSolidMaxNumItems(SelectedActor))
-        Else
-          AddTextOptionST("WF_DisplayMaxStorage_T", "$Max Num Items To Stow", SCLib.WF_getSolidMaxNumItems(SelectedActor))
-        EndIf
-        AddTextOptionST("WF_DisplayMaxInsert_T", "$Max Insertable Size", SCLib.WF_getSolidMaxInsert(SelectedActor, SelectedData))
-        AddTextOptionST("DisplayNumStowedItems_T", "$Num Items Stowed Away", SCLib.countItemTypes(SelectedActor, 4, True))
-        If SCLSet.WF_SolidActive
-          AddTextOptionST("DisplaySolidFullness_T", "$Solid Fulless", SCLib.roundFlt(SCLib.WF_getTotalSolidFullness(SelectedActor, SelectedData), 1))
-          AddTextOptionST("DisplaySolidIllness", "$Solid Illness Level", JMap.getInt(SelectedData, "WF_SolidIllnessLevel"))
-        EndIf
+      AddTextOptionST("DisplaySolidIllness", "$Illness Level", JMap.getInt(SelectedData, "WF_SolidIllnessLevel"))
+      If SCLSet.DebugEnable
+        AddSliderOptionST("WF_EditMaxStorage_S", "$Set Max Num Items To Stow", SCLib.WF_getSolidMaxNumItems(SelectedActor))
+      Else
+        AddTextOptionST("WF_DisplayMaxStorage_T", "$Max Num Items To Stow", SCLib.WF_getSolidMaxNumItems(SelectedActor))
       EndIf
+      AddTextOptionST("WF_DisplayMaxInsert_T", "$Max Insertable Size", SCLib.WF_getSolidMaxInsert(SelectedActor, SelectedData))
+      If SelectedActor == PlayerRef && SCLib.getCurrentPerkLevel(SelectedActor, "WF_BottomsUp") >= 1
+        AddToggleOptionST("SetAutoDestination_TOG", "$Auto-Send To Colon", SCLSet.PlayerAutoDestination)
+      EndIf
+      AddTextOptionST("DisplayNumStowedItems_T", "$Num Items Stowed Away", SCLib.countItemTypes(SelectedActor, 4, True))
+      AddTextOptionST("DisplaySolidFullness_T", "$Solid Fulless", SCLib.roundFlt(SCLib.WF_getTotalSolidFullness(SelectedActor, SelectedData), 1))
   		;AddTextOptionST("DisplayTotalDigest_T", "Total Digested Food", JMap.getFlt(AD, "STTotalDigestedFood")) ;16
   		AddMenuOptionST("DisplayStomachContents_M", "$Show Stomach Contents", "") ;18
 
@@ -138,6 +138,19 @@ Event OnPageReset(string a_page)
       AddTextOptionST("DisplayTotalDigest_T", "$Total Digested Food", JMap.getFlt(SelectedData, "STTotalDigestedFood")) ;2
       AddTextOptionST("DisplayTotalTimesVomited", "$Total Times Vomited", JMap.getInt(SelectedData, "SCLAllowOverflowTracking")) ;4
       AddTextOptionST("DisplayHighestFullness", "$Highest Fullness Reached", JMap.getFlt(SelectedData, "SCLHighestFullness")) ; 6
+      AddTextOptionST("DisplayTotalBrokenDown_T", "$Total Broken Down Food", JMap.getFlt(SelectedData, "WF_TotalBrokenDown")) ;2
+      Int Bottoms = SCLib.getCurrentPerkLevel(SelectedActor, "WF_BottomsUp")
+      If Bottoms >= 1
+        AddTextOptionST("DisplayTotalTempBoostsGained_T", "$Total Temporary Boosts Gained", JMap.getInt(SelectedData, "WF_TotalTempBoostsGained"))
+      EndIf
+      If Bottoms >= 4
+        AddTextOptionST("DisplayTotalPermBoostsGained_T", "$Total Permanent Boosts Gained", JMap.getInt(SelectedData, "WF_TotalPermBoostsGained"))
+      EndIf
+      Int Refine = SCLib.getCurrentPerkLevel(SelectedActor, "WF_RearRefinery")
+      If Refine > 1
+        AddTextOptionST("DisplayTotalItemsRefined_T", "$Total Items Refined", JMap.getInt(SelectedData, "WF_TotalRefinedItems"))
+      EndIf
+
       AddTextOptionST("DisplayCurrentDigestValue", "Current Weight", SCVLib.genDigestValue(SelectedActor, True))
       AddTextOptionST("DisplayNumAvoidVore", "Avoided Being Eaten", JMap.getInt(SelectedData, "SCV_StrokeOfLuckAvoidVore"))
       Int LuckNum = JMap.getInt(SelectedData, "SCV_StrokeOfLuckActivate")
@@ -152,6 +165,7 @@ Event OnPageReset(string a_page)
       Else
         AddTextOptionST("UnknownDisplay", "?????", "?????")
       EndIf
+      AddMenuOptionST("EssentialPreyList_M", "$Essential Prey List", "")
       SetCursorPosition(3)
       AddTextOptionST("DisplayNumPreyEaten", "Devoured and Finished Prey", JMap.getInt(SelectedData, "SCV_NumPreyEaten"))  ;3
       AddTextOptionST("DisplayNumOVPreyEaten", "Swallowed and Finished Prey", JMap.getInt(SelectedData, "SCV_NumOVPreyEaten"))  ;5
@@ -227,15 +241,9 @@ Event OnPageReset(string a_page)
     AddEmptyOption()
     AddEmptyOption()
     AddHeaderOption("Waste Function Settings")
-    AddToggleOptionST("WF_Enable_TOG", "$Enable Waste Functions", SCLSet.WF_Active)
-    If SCLSet.WF_Active
-      AddSliderOptionST("SetAVDestination_S", "$Choose Anal Vore Behavior.", SCVSet.AVDestinationChoice, "Option {0}")
-      AddKeyMapOptionST("WF_ActionKeyPick_KM", "$Choose Waste Function Action Key", SCLSet.WF_ActionKey)
-      AddToggleOptionST("WF_SolidEnable_TOG", "$Enable Solid Waste Functions", SCLSet.WF_SolidActive)
-      AddToggleOptionST("WF_LiquidEnable_TOG", "$Enable Liquid Waste Functions", SCLSet.WF_LiquidActive)
-      ;AddToggleOptionST("WF_GasEnable_TOG", "$Enable Gas Waste Functions", SCLSet.WF_GasActive)
-      ;AddEmptyOption()
-    EndIf
+    AddKeyMapOptionST("WF_ActionKeyPick_KM", "$Choose Waste Function Action Key", SCLSet.WF_ActionKey)
+    AddSliderOptionST("SetAVDestination_S", "$Choose Anal Vore Behavior.", SCVSet.AVDestinationChoice, "Option {0}")
+    AddToggleOptionST("WF_Enable_TOG", "$Enable Waste Needs Functions", SCLSet.WF_NeedsActive)
     AddHeaderOption("Other Settings")
     AddHeaderOption("")
     AddSliderOptionST("PlayerMessagePOV_S", "$Message POV", SCLSet.PlayerMessagePOV, SCLib.addIntSuffix(SCLSet.PlayerMessagePOV))
@@ -487,547 +495,64 @@ State DisplayResistExp_T
   EndEvent
 EndState
 
-;Perks *************************************************************************
-State SCV_IntenseHunger_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_IntenseHunger", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_IntenseHunger") - 1), False, "OK", "")
-	EndEvent
-
+State DisplayCurrentDigestValue
   Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_IntenseHunger", -1)
-	EndEvent
-EndState
-
-State SCV_IntenseHunger_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_IntenseHunger")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_IntenseHunger", 1)
+    SetInfoText("How much the actor weighs. Based on how much food they've eaten, how much they have in their inventory, race, size, etc. Affects how difficult they are to eat.")
   EndEvent
 EndState
 
-State SCV_IntenseHunger_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_IntenseHunger", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_IntenseHunger")), False, "OK", "")
-	EndEvent
-
+State DisplayNumAvoidVore
   Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_IntenseHunger", 0)
-	EndEvent
-EndState
-
-State SCV_MetalMuncher_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_MetalMuncher", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_MetalMuncher") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_MetalMuncher", -1)
-	EndEvent
-EndState
-
-State SCV_MetalMuncher_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_MetalMuncher")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_MetalMuncher", 1)
+    SetInfoText("Number of times the actor has avoided being eaten.")
   EndEvent
 EndState
 
-State SCV_MetalMuncher_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_MetalMuncher", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_MetalMuncher")), False, "OK", "")
-	EndEvent
-
+State DisplayStrokesOfLuck
   Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_MetalMuncher", 0)
-	EndEvent
-EndState
-
-State SCV_FollowerofNamira_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_FollowerofNamira", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_FollowerofNamira") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_FollowerofNamira", -1)
-	EndEvent
-EndState
-
-State SCV_FollowerofNamira_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_FollowerofNamira")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_FollowerofNamira", 1)
+    SetInfoText("Number of times the actor has been unusually lucky against preds.")
   EndEvent
 EndState
 
-State SCV_FollowerofNamira_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_FollowerofNamira", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_FollowerofNamira")), False, "OK", "")
-	EndEvent
-
+State UnknownDisplay
   Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_FollowerofNamira", 0)
-	EndEvent
-EndState
-
-State SCV_DragonDevourer_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_DragonDevourer", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_DragonDevourer") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_DragonDevourer", -1)
-	EndEvent
-EndState
-
-State SCV_DragonDevourer_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_DragonDevourer")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_DragonDevourer", 1)
+    SetInfoText("?????")
   EndEvent
 EndState
 
-State SCV_DragonDevourer_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_DragonDevourer", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_DragonDevourer")), False, "OK", "")
-	EndEvent
-
+State DisplayNumDragonGems
   Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_DragonDevourer", 0)
-	EndEvent
-EndState
-
-State SCV_SpiritSwallower_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_SpiritSwallower", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_SpiritSwallower") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_SpiritSwallower", -1)
-	EndEvent
-EndState
-
-State SCV_SpiritSwallower_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_SpiritSwallower")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_SpiritSwallower", 1)
+    SetInfoText("Number of dragon gems consumed.")
   EndEvent
 EndState
 
-State SCV_SpiritSwallower_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_SpiritSwallower", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_SpiritSwallower")), False, "OK", "")
-	EndEvent
+State EssentialPreyList_M
+  Event OnMenuOpenST()
+    EssentialPreyList = SCVSet.SCVEssential.getActorList()
+    Int NumActors = EssentialPreyList.length
+    String[] ActorNames = Utility.CreateStringArray(NumActors, "")
+    Int i = 0
+    While i < NumActors
+      Actor EssActor = EssentialPreyList[i] as Actor
+      If EssActor
+        ActorNames[i] = SCVLib.nameGet(EssActor)
+      EndIf
+      i += 1
+    EndWhile
+    SetMenuDialogOptions(ActorNames)
+    SetMenuDialogStartIndex(0)
+    SetMenuDialogDefaultIndex(0)
+  EndEvent
 
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_SpiritSwallower", 0)
-	EndEvent
-EndState
-
-State SCV_ExpiredEpicurian_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_ExpiredEpicurian", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_ExpiredEpicurian") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ExpiredEpicurian", -1)
-	EndEvent
-EndState
-
-State SCV_ExpiredEpicurian_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_ExpiredEpicurian")
+  Event OnMenuAcceptST(int a_index)
+    If ShowMessage("Restore " + SCVLib.nameGet(EssentialPreyList[a_index] as Actor) + "?")
+      SCVSet.SCVEssential.restoreActor(EssentialPreyList[a_index] as Actor)
+    EndIf
   EndEvent
 
   Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ExpiredEpicurian", 1)
+    SetInfoText("List of essential actors that have been lethally devoured. Select one to restore them.")
   EndEvent
 EndState
-
-State SCV_ExpiredEpicurian_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_ExpiredEpicurian", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_ExpiredEpicurian")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ExpiredEpicurian", 0)
-	EndEvent
-EndState
-
-State SCV_DaedraDieter_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_DaedraDieter", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_DaedraDieter") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_DaedraDieter", -1)
-	EndEvent
-EndState
-
-State SCV_DaedraDieter_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_DaedraDieter")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_DaedraDieter", 1)
-  EndEvent
-EndState
-
-State SCV_DaedraDieter_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_DaedraDieter", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_DaedraDieter")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_DaedraDieter", 0)
-	EndEvent
-EndState
-
-State SCV_Stalker_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_Stalker", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_Stalker") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Stalker", -1)
-	EndEvent
-EndState
-
-State SCV_Stalker_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_Stalker")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Stalker", 1)
-  EndEvent
-EndState
-
-State SCV_Stalker_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_Stalker", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_Stalker")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Stalker", 0)
-	EndEvent
-EndState
-
-State SCV_RemoveLimits_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_RemoveLimits", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_RemoveLimits") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_RemoveLimits", -1)
-	EndEvent
-EndState
-
-State SCV_RemoveLimits_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_RemoveLimits")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_RemoveLimits", 1)
-  EndEvent
-EndState
-
-State SCV_RemoveLimits_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_RemoveLimits", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_RemoveLimits")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_RemoveLimits", 0)
-	EndEvent
-EndState
-
-State SCV_Constriction_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_Constriction", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_Constriction") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Constriction", -1)
-	EndEvent
-EndState
-
-State SCV_Constriction_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_Constriction")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Constriction", 1)
-  EndEvent
-EndState
-
-State SCV_Constriction_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_Constriction", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_Constriction")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Constriction", 0)
-	EndEvent
-EndState
-
-State SCV_Nourish_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_Nourish", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_Nourish") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Nourish", -1)
-	EndEvent
-EndState
-
-State SCV_Nourish_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_Nourish")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Nourish", 1)
-  EndEvent
-EndState
-
-State SCV_Nourish_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_Nourish", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_Nourish")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Nourish", 0)
-	EndEvent
-EndState
-
-State SCV_Acid_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_Acid", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_Acid") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Acid", -1)
-	EndEvent
-EndState
-
-State SCV_Acid_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_Acid")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Acid", 1)
-  EndEvent
-EndState
-
-State SCV_Acid_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_Acid", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_Acid")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_Acid", 0)
-	EndEvent
-EndState
-
-State SCV_PitOfSouls_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_PitOfSouls", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_PitOfSouls") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_PitOfSouls", -1)
-	EndEvent
-EndState
-
-State SCV_PitOfSouls_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_PitOfSouls")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_PitOfSouls", 1)
-  EndEvent
-EndState
-
-State SCV_PitOfSouls_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_PitOfSouls", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_PitOfSouls")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_PitOfSouls", 0)
-	EndEvent
-EndState
-
-State SCV_StrokeOfLuck_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_StrokeOfLuck", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_StrokeOfLuck") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_StrokeOfLuck", -1)
-	EndEvent
-EndState
-
-State SCV_StrokeOfLuck_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_StrokeOfLuck")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_StrokeOfLuck", 1)
-  EndEvent
-EndState
-
-State SCV_StrokeOfLuck_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_StrokeOfLuck", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_StrokeOfLuck")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_StrokeOfLuck", 0)
-	EndEvent
-EndState
-
-State SCV_ExpectPushback_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_ExpectPushback", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_ExpectPushback") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ExpectPushback", -1)
-	EndEvent
-EndState
-
-State SCV_ExpectPushback_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_ExpectPushback")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ExpectPushback", 1)
-  EndEvent
-EndState
-
-State SCV_ExpectPushback_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_ExpectPushback", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_ExpectPushback")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ExpectPushback", 0)
-	EndEvent
-EndState
-
-State SCV_CorneredRat_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_CorneredRat", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_CorneredRat") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_CorneredRat", -1)
-	EndEvent
-EndState
-
-State SCV_CorneredRat_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_CorneredRat")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_CorneredRat", 1)
-  EndEvent
-EndState
-
-State SCV_CorneredRat_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_CorneredRat", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_CorneredRat")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_CorneredRat", 0)
-	EndEvent
-EndState
-
-State SCV_FillingMeal_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_FillingMeal", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_FillingMeal") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_FillingMeal", -1)
-	EndEvent
-EndState
-
-State SCV_FillingMeal_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_FillingMeal")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_FillingMeal", 1)
-  EndEvent
-EndState
-
-State SCV_FillingMeal_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_FillingMeal", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_FillingMeal")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_FillingMeal", 0)
-	EndEvent
-EndState
-
-State SCV_ThrillingStruggle_TB
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_ThrillingStruggle", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_ThrillingStruggle") - 1), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ThrillingStruggle", -1)
-	EndEvent
-EndState
-
-State SCV_ThrillingStruggle_TA
-  Event OnSelectST()
-    setPerkOption(SelectedActor, "SCV_ThrillingStruggle")
-  EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ThrillingStruggle", 1)
-  EndEvent
-EndState
-
-State SCV_ThrillingStruggle_T
-	Event OnSelectST()
-    ShowMessage(SCLib.getPerkDescription("SCV_ThrillingStruggle", SCLib.getCurrentPerkLevel(SelectedActor, "SCV_ThrillingStruggle")), False, "OK", "")
-	EndEvent
-
-  Event OnHighlightST()
-    setPerkInfo(SelectedActor, "SCV_ThrillingStruggle", 0)
-	EndEvent
-EndState
-
 ;Settings **********************************************************************
 State EnableMPreds_TOG
   Event OnSelectST()

@@ -84,7 +84,7 @@ Event OnInsertPreyCall(Int aiID)
       SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
     EndIf/;
     Int iModType = ItemType
-    If !SCLSet.WF_Active || SCVSet.AVDestinationChoice == 1
+    If SCVSet.AVDestinationChoice == 1
       If ItemType == 3 ;|| ItemType == 5
         iModType = 1
       ElseIf ItemType == 4 ;|| ItemType == 7
