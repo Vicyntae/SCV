@@ -41,7 +41,6 @@ EndEvent
 
 Event OnKeyUp(int keyCode, float holdTime)
   If keyCode == SCLSet.StatusKey
-    Note("Status Key Pressed.")
     If Utility.IsInMenuMode()
       Return
     EndIf

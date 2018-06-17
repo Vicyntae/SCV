@@ -2066,7 +2066,6 @@ Function handleActorMainMenu(Actor akTarget, Int aiOption, Int aiMode)
 EndFunction
 
 Function showQuickActorStatus(Actor akTarget)
-  Note("Showing Quick Actor Status.")
   If akTarget == PlayerRef
     Int PlayerData = getTargetData(akTarget)
     Float Fullness = JMap.getFlt(PlayerData, "STFullness")
@@ -2090,7 +2089,6 @@ Function showQuickActorStatus(Actor akTarget)
 EndFunction
 
 Function showFullActorStatus(Actor akTarget)
-  Note("Showing Full Actor Status.")
   If akTarget == PlayerRef
     Int PlayerData = getTargetData(akTarget)
     String FinalString
