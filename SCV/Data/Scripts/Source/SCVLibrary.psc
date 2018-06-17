@@ -2065,6 +2065,138 @@ Function handleActorMainMenu(Actor akTarget, Int aiOption, Int aiMode)
   EndIf
 EndFunction
 
+Function showQuickActorStatus(Actor akTarget)
+  Note("Showing Quick Actor Status.")
+  If akTarget == PlayerRef
+    Int PlayerData = getTargetData(akTarget)
+    Float Fullness = JMap.getFlt(PlayerData, "STFullness")
+    Float Base = getAdjBase(akTarget)
+    Float Energy = akTarget.GetActorValue("Stamina")
+    If getCurrentPerkLevel(akTarget, "SCV_StruggleSorcery") >= 1
+      Energy += akTarget.GetActorValue("Magicka")
+    EndIf
+    Debug.Notification("My Fullness: " + Fullness + "/" + Base + ", My Energy = " + Energy)
+  ElseIf akTarget.IsInFaction(SCLSet.CurrentFollowerFaction) || SCLSet.DebugEnable
+    Int TargetData = getTargetData(akTarget)
+    Float Fullness = JMap.getFlt(TargetData, "STFullness")
+    Float Base = getAdjBase(akTarget)
+    String name = nameGet(akTarget)
+    Float Energy = akTarget.GetActorValue("Stamina")
+    If getCurrentPerkLevel(akTarget, "SCV_StruggleSorcery") >= 1
+      Energy += akTarget.GetActorValue("Magicka")
+    EndIf
+    Debug.Notification(name + "'s Fullness: " + Fullness + "/" + Base + ", "+ name + "'s' Energy = " + Energy)
+  EndIf
+EndFunction
+
+Function showFullActorStatus(Actor akTarget)
+  Note("Showing Full Actor Status.")
+  If akTarget == PlayerRef
+    Int PlayerData = getTargetData(akTarget)
+    String FinalString
+
+    Float Fullness = JMap.getFlt(PlayerData, "STFullness")
+    Float Base = getAdjBase(akTarget)
+    Float Energy = akTarget.GetActorValue("Stamina")
+    If getCurrentPerkLevel(akTarget, "SCV_StruggleSorcery") >= 1
+      Energy += akTarget.GetActorValue("Magicka")
+    EndIf
+    FinalString += "My Fullness: " + Fullness + "/" + Base + ", My Energy = " + Energy + ". \n"
+
+    Actor Pred = getPred(akTarget, PlayerData)
+    If Pred
+      String PredName = nameGet(Pred)
+      Float PredEnergy = Pred.GetActorValue("Stamina")
+      If getCurrentPerkLevel(Pred, "SCV_StruggleSorcery") >= 1
+        PredEnergy += Pred.GetActorValue("Magicka")
+      EndIf
+      String PredEntry = "Predator: " + PredName + ": " + PredEnergy + "\n"
+      FinalString += PredEntry
+    EndIf
+
+    Int JF_Prey = getContents(akTarget, 8, PlayerData)
+    Int i
+    String[] PreyArray = New String[10]
+    Form CurrentPrey = JFormMap.nextKey(JF_Prey)
+    While CurrentPrey && i < 10
+      If CurrentPrey as Actor
+        Float PreyEnergy = (CurrentPrey as Actor).GetActorValue("Stamina")
+        If getCurrentPerkLevel((CurrentPrey as Actor), "SCV_StruggleSorcery") >= 1
+          PreyEnergy += (CurrentPrey as Actor).GetActorValue("Magicka")
+        EndIf
+        String Name = nameGet(CurrentPrey)
+        PreyArray[i] = Name + ": " + PreyEnergy
+        i += 1
+      EndIf
+      CurrentPrey = JFormMap.nextKey(JF_Prey, CurrentPrey)
+    EndWhile
+    i = 0
+    Bool Done
+    While i < 10  && !Done
+      String Entry = PreyArray[i]
+      If Entry
+        FinalString += PreyArray[i] + "\n"
+      Else
+        Done = True
+      EndIf
+      i += 1
+    EndWhile
+    Debug.MessageBox(FinalString)
+  ElseIf akTarget.IsInFaction(SCLSet.CurrentFollowerFaction) || SCLSet.DebugEnable
+    Int ActorData = getTargetData(akTarget)
+    String FinalString
+
+    Float Fullness = JMap.getFlt(ActorData, "STFullness")
+    Float Base = getAdjBase(akTarget)
+    Float Energy = akTarget.GetActorValue("Stamina")
+    If getCurrentPerkLevel(akTarget, "SCV_StruggleSorcery") >= 1
+      Energy += akTarget.GetActorValue("Magicka")
+    EndIf
+    String name = nameGet(akTarget)
+    FinalString += name + "'s Fullness: " + Fullness + "/" + Base + ", My Energy = " + Energy + ". \n"
+
+    Actor Pred = getPred(akTarget, ActorData)
+    If Pred
+      String PredName = nameGet(Pred)
+      Float PredEnergy = Pred.GetActorValue("Stamina")
+      If getCurrentPerkLevel(Pred, "SCV_StruggleSorcery") >= 1
+        PredEnergy += Pred.GetActorValue("Magicka")
+      EndIf
+      String PredEntry = "Predator: " + PredName + ": " + PredEnergy + "\n"
+      FinalString += PredEntry
+    EndIf
+
+    String[] PreyArray = New String[10]
+    Int i
+    Int JF_Prey = getContents(akTarget, 8, ActorData)
+    Form CurrentPrey = JFormMap.nextKey(JF_Prey)
+    While CurrentPrey && i < 10
+      If CurrentPrey as Actor
+        Float PreyEnergy = (CurrentPrey as Actor).GetActorValue("Stamina")
+        If getCurrentPerkLevel((CurrentPrey as Actor), "SCV_StruggleSorcery") >= 1
+          PreyEnergy += (CurrentPrey as Actor).GetActorValue("Magicka")
+        EndIf
+        String PreyName = nameGet(CurrentPrey)
+        PreyArray[i] = PreyName + ": " + PreyEnergy
+        i += 1
+      EndIf
+      CurrentPrey = JFormMap.nextKey(JF_Prey, CurrentPrey)
+    EndWhile
+    i = 0
+    Bool Done
+    While i < 10  && !Done
+      String Entry = PreyArray[i]
+      If Entry
+        FinalString += PreyArray[i] + "\n"
+      Else
+        Done = True
+      EndIf
+      i += 1
+    EndWhile
+    Debug.MessageBox(FinalString)
+  EndIf
+EndFunction
+
 Function checkDebugSpells()
   If SCLSet.DebugEnable
     If !PlayerRef.HasSpell(SCVSet.SCV_MaxPredSpell)

@@ -248,6 +248,7 @@ Event OnPageReset(string a_page)
     AddHeaderOption("")
     AddSliderOptionST("PlayerMessagePOV_S", "$Message POV", SCLSet.PlayerMessagePOV, SCLib.addIntSuffix(SCLSet.PlayerMessagePOV))
     AddKeyMapOptionST("ActionKeyPick_KM", "$Choose Action key", SCLSet.ActionKey)
+    AddKeyMapOptionST("StatusKeyPick_KM", "$Choose Status Key", SCLSet.StatusKey)
     If SCVSet.SizeMatters_Initialized
       AddToggleOptionST("SizeMattersActive_TOG", "Enable Size Matters Functions", SCVSet.SizeMattersActive)
       AddEmptyOption()

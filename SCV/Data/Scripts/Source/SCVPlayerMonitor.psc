@@ -5,6 +5,7 @@ Function Setup()
   RegisterForModEvent("SCLActionKeyChange", "OnActionKeyChange")
   RegisterForKey(SCLSet.ActionKey)
   RegisterForKey(SCLSet.WF_ActionKey)
+  RegisterForKey(SCLSet.StatusKey)
   UnregisterForMenu("Console")
   RegisterForMenu("Console")
 EndFunction
@@ -21,6 +22,7 @@ Event OnActionKeyChange()
   UnregisterForAllKeys()
   RegisterForKey(SCLSet.ActionKey)
   RegisterForKey(SCLSet.WF_ActionKey)
+  RegisterForKey(SCLSet.StatusKey)
 EndEvent
 
 Event OnMenuOpen(string menuName)
@@ -34,6 +36,24 @@ Event OnMenuClose(string menuName)
   If menuName == "Console"
     UnregisterForKey(28)
     UnregisterForKey(156)
+  EndIf
+EndEvent
+
+Event OnKeyUp(int keyCode, float holdTime)
+  If keyCode == SCLSet.StatusKey
+    Note("Status Key Pressed.")
+    If Utility.IsInMenuMode()
+      Return
+    EndIf
+    Actor CurrentRef = Game.GetCurrentCrosshairRef() as Actor
+    If !CurrentRef
+      CurrentRef = PlayerRef
+    EndIf
+    If holdTime < 1
+      SCVLib.showQuickActorStatus(CurrentRef)
+    Else
+      SCVLib.showFullActorStatus(CurrentRef)
+    EndIf
   EndIf
 EndEvent
 

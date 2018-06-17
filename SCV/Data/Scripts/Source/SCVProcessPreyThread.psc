@@ -102,6 +102,29 @@ Function performStruggle(Actor akTarget, Int aiTargetData = 0)
   Int Damage = JMap.getInt(TargetData, "SCV_DamageRank")
   Bool MagicPerk = SCVLib.getCurrentPerkLevel(akTarget, "SCV_StruggleSorcery")
   ;Note(SCVLib.nameGet(akTarget) + " stamina proxy = " + SCVLib.getProxy(akTarget, "Stamina") + "/" + SCVLib.getProxyBase(akTarget, "Stamina") + ", " + SCVLib.getProxyPercent(akTarget, "Stamina"))
+  Float StaminaPercent = akTarget.GetActorValuePercentage("Stamina")
+  If akTarget != PlayerRef && StaminaPercent < 0.5
+    Float Chance = Utility.RandomFloat()
+    If Chance < 0.3
+      Int i
+      Int NumItems = akTarget.GetNumItems()
+      Bool Taken
+      While i < NumItems && !Taken
+        Form Item = akTarget.getNthForm(i)
+        If Item && Item as Potion
+          If !(Item as Potion).IsFood() || !(Item as Potion).IsPoison()
+            MagicEffect[] Effects = (Item as Potion).GetMagicEffects()
+            Int StaminaFind = Effects.Find(SCLSet.AlchRestoreStamina)
+            If StaminaFind >= 0
+              akTarget.EquipItem(Item)
+              Taken = True
+            EndIf
+          EndIf
+        EndIf
+        i += 1
+      EndWhile
+    EndIf
+  EndIf
   If Struggle
     Float SMod = SCVSet.StruggleMod
     If MagicPerk

@@ -57,11 +57,12 @@ Event OnQuickUpdate()
   Bool HasStruggle
 
   If SCVLib.hasOVStrugglePrey(MyActor, ActorData)
+    Float StaminaPercent = MyActor.GetActorValuePercentage("Stamina")
     If !Sent
       Float ReactChance = Utility.RandomFloat()
       If ReactChance <= 0.01
         Sent = True
-        If MyActor.GetActorValuePercentage("Stamina") < 0.3
+        If StaminaPercent < 0.3
           PlayerThoughtDB(MyActor, "SCVOVPredStruggleTired")
         ElseIf SCVLib.getDamageTier(MyActor)
           PlayerThoughtDB(MyActor, "SCVOVPredStruggleDamage")
