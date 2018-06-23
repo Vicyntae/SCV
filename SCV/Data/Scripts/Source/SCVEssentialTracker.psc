@@ -24,9 +24,6 @@ Form[] Function getActorList()
   Return SCV_EssentialTrackingList.ToArray()
 EndFunction
 
-
-
-
 ;/Int Function trackActor(Actor akTarget)
   Int i
   Int NumAlias = GetNumAliases()

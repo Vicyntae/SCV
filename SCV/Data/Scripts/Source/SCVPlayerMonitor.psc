@@ -140,7 +140,7 @@ Event OnKeyDown(int keyCode)
       Return
     EndIf
     If MyActor.IsSneaking()
-      SCLib.WF_SolidRemove(MyActor, ActorData)
+      SCLib.WF_SolidRemoveAll(MyActor, ActorData)
     Else
       If MyActor.GetLeveledActorBase().GetSex() == 1
         MyActor.StartSneaking()

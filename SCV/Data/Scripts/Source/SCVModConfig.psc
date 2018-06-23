@@ -245,6 +245,7 @@ Event OnPageReset(string a_page)
     AddSliderOptionST("SetAVDestination_S", "$Choose Anal Vore Behavior.", SCVSet.AVDestinationChoice, "Option {0}")
     AddToggleOptionST("WF_Enable_TOG", "$Enable Waste Needs Functions", SCLSet.WF_NeedsActive)
     AddHeaderOption("Other Settings")
+    AddToggleOptionST("EnableMistyGroveAccess_TOG", "$Enable return to Misty Grove", SCVSet.SCV_dunDA14PortalEnabledVar.GetValueInt() as Bool)
     AddHeaderOption("")
     AddSliderOptionST("PlayerMessagePOV_S", "$Message POV", SCLSet.PlayerMessagePOV, SCLib.addIntSuffix(SCLSet.PlayerMessagePOV))
     AddKeyMapOptionST("ActionKeyPick_KM", "$Choose Action key", SCLSet.ActionKey)
@@ -778,6 +779,27 @@ State DebugEnable_TOG
     SCVLib.checkDebugSpells()
     ForcePageReset()
 	EndEvent
+EndState
+
+State EnableMistyGroveAccess_TOG
+  Event OnSelectST()
+    Int Set = SCVSet.SCV_dunDA14PortalEnabledVar.GetValueInt()
+    If Set >= 1
+      SCVSet.SCV_dunDA14PortalEnabledVar.SetValueInt(0)
+    Else
+      SCVSet.SCV_dunDA14PortalEnabledVar.SetValueInt(1)
+    EndIf
+    SetToggleOptionValueST(SCVSet.SCV_dunDA14PortalEnabledVar.GetValueInt())
+  EndEvent
+
+  Event OnDefaultST()
+    SCVSet.SCV_dunDA14PortalEnabledVar.SetValueInt(0)
+    SetToggleOptionValueST(False)
+	EndEvent
+
+  Event OnHighlightST()
+    SetInfoText("Reenables the portal to the Misty Grove.")
+  EndEvent
 EndState
 
 State ShowDebugMessages07_TOG

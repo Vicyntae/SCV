@@ -180,7 +180,7 @@ Bool Function checkSpecificConditions()
     Float Fullness = JMap.getFlt(PredData, "STFullness")
     Float Max = SCVLib.getMax(Pred, PredData)
     If (Fullness + DigestValue > Max) || \
-      (SCLAllowOverflow.getFirstPerkLevel(Pred) == 0 && Fullness < Max)
+      (SCLAllowOverflow.getFirstPerkLevel(Pred) >= 1 && Fullness < Max)
       If !SCLSet.GodMode1
         Notice("Failed. Pred cannot fit prey.")
         PlayerThoughtDB(Pred, "SCVPredCantEatFull")
@@ -355,7 +355,7 @@ Function runVore()
     Pred.RestoreActorValue("Stamina", PredStaminaRestore)
     Prey.RestoreActorValue("Stamina", PreyStaminaRestore)
     SCVSet.AnimationThreadHandler.sendStartEvent(AnimRecall)
-    SCVLib.insertPrey(Pred, Prey, Type, AnimRecall)
+    SCVLib.insertPrey(Pred, Prey, Type, False, AnimRecall)
   Else
     Notice("Failed. Dice roll did not pass.")
     SCVSet.AnimationThreadHandler.sendCancelEvent(AnimRecall)

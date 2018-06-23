@@ -27,11 +27,11 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Return True
   EndIf
   Int TargetData = SCVLib.getData(akTarget, aiTargetData)
-  If aiPerkLevel == 1 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 1 && SCVSet.MQ202.GetStage() == 180  ;Complete A Cornered Rat
+  If aiPerkLevel == 1 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 1 && SCVSet.MQ202.IsCompleted()  ;Complete A Cornered Rat
     Return True
-  ElseIf aiPerkLevel == 2 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 5 && SCVSet.MG08.GetStage() == 200 ;Complete The Eye of Magnus
+  ElseIf aiPerkLevel == 2 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 5 && SCVSet.MG08.IsCompleted() ;Complete The Eye of Magnus
     Return True
-  ElseIf aiPerkLevel == 3 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 15 && SCVSet.MQ301.GetStage() == 220 ; Complete The Fallen
+  ElseIf aiPerkLevel == 3 && JMap.getInt(TargetData, "SCV_NumTimesEaten") >= 15 && SCVSet.MQ301.IsCompleted() ; Complete The Fallen
     Return True
   EndIf
 EndFunction

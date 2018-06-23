@@ -25,10 +25,10 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Return True
   EndIf
   Int Level = akTarget.GetLevel()
-  If aiPerkLevel == 1 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce1) && Level >= 7 && SCVSet.FreeformRiften19.GetStage() == 20  ;Complete Bloody Nose
+  If aiPerkLevel == 1 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce1) && Level >= 7 && SCVSet.FreeformRiften19.IsCompleted()  ;Complete Bloody Nose
     Return True
-  ElseIf aiPerkLevel == 2 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce2) && Level >= 15 && SCVSet.FreeformRiften09.GetStage() == 200 ;Complete Grimsever's Return
+  ElseIf aiPerkLevel == 2 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce2) && Level >= 15 && SCVSet.FreeformRiften09.IsCompleted() ;Complete Grimsever's Return
     Return True
-  ElseIf aiPerkLevel == 2 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce3) && Level >= 25 && SCVSet.MQ204.GetStage() == 200 ;Complete The Throat of the World
+  ElseIf aiPerkLevel == 2 && PlayerRef.HasSpell(SCVSet.VoiceUnrelentingForce3) && Level >= 25 && SCVSet.MQ204.IsCompleted() ;Complete The Throat of the World
   EndIf
 EndFunction

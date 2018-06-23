@@ -26,11 +26,11 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
   EndIf
   Int ArmorLevel = akTarget.GetActorValue("HeavyArmor") as Int
   Int Stamina = akTarget.GetActorValue("Stamina") as Int
-  If aiPerkLevel == 1 && ArmorLevel >= 20 && Stamina >= 200 && SCVSet.dunTrevasWatchQST.GetStage() == 100 ;Complete Infiltration
+  If aiPerkLevel == 1 && ArmorLevel >= 20 && Stamina >= 200 && SCVSet.dunTrevasWatchQST.IsCompleted() ;Complete Infiltration
     Return True
-  ElseIf aiPerkLevel == 2 && ArmorLevel >= 40 && Stamina >= 300 && SCVSet.dunIronbindQST.GetStage() == 200  ;Complete Coming of Age at Ironbind Barrow
+  ElseIf aiPerkLevel == 2 && ArmorLevel >= 40 && Stamina >= 300 && SCVSet.dunIronbindQST.IsCompleted()  ;Complete Coming of Age at Ironbind Barrow
     Return True
-  ElseIf aiPerkLevel == 3 && ArmorLevel >= 60 && Stamina >= 400 && SCVSet.dunMistwatchQST.GetStage() == 100
+  ElseIf aiPerkLevel == 3 && ArmorLevel >= 60 && Stamina >= 400 && SCVSet.dunMistwatchQST.IsCompleted()
     Return True
   EndIf
 EndFunction

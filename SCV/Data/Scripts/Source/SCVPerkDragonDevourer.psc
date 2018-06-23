@@ -31,9 +31,9 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Int CurrentDragonSouls = JMap.getInt(SCVLib.getTargetData(PlayerRef), "SCV_DragonGemsConsumed")
     Int Level = akTarget.GetLevel()
     Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumDragonsEaten")
-    If aiPerkLevel == 1 && DragonsKilled >= 30 && Level >= 30 && SCVSet.MQ203.GetStage() == 280 ;Complete Quest Alduin's Wall
+    If aiPerkLevel == 1 && DragonsKilled >= 30 && Level >= 30 && SCVSet.MQ203.IsCompleted() ;Complete Quest Alduin's Wall
       Return True
-    ElseIf aiPerkLevel == 2 && DragonsKilled >= 70 && Level >= 50 && NumEatenPrey >= 20 && SCVSet.MQ305.GetStage() == 200 ;Complete Quest Dragonslayer
+    ElseIf aiPerkLevel == 2 && DragonsKilled >= 70 && Level >= 50 && NumEatenPrey >= 20 && SCVSet.MQ305.IsCompleted() == 200 ;Complete Quest Dragonslayer
       Return True
     ElseIf aiPerkLevel == 3 && DragonsKilled >= 100 && Level >= 70 && NumEatenPrey >= 100 && CurrentDragonSouls >= 10
       Return True

@@ -30,9 +30,9 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Float Health = akTarget.GetBaseActorValue("Health")
     Int Level = akTarget.GetLevel()
     Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumHumansEaten")
-    If aiPerkLevel == 1 && Health >= 150 && Level >= 5 && (SCVSet.DA11Intro.GetStage() == 20 || SCVSet.DA11Intro.GetStage() == 200) ;Complete Quest Investigate the Hall of The Dead
+    If aiPerkLevel == 1 && Health >= 150 && Level >= 5 && (SCVSet.DA11Intro.IsCompleted()) ;Complete Quest Investigate the Hall of The Dead
       Return True
-    ElseIf aiPerkLevel == 2 && Health >= 250 && Level >= 10 && NumEatenPrey >= 30 && (SCVSet.DA05.GetStage() == 100 || SCVSet.DA05.GetStage() == 105 || SCVSet.DA05.GetStage() == 205 || SCVSet.C03.GetStage() == 200) ;Complete (or fail) Quest Ill Met By Moonlight || The Silver Hand
+    ElseIf aiPerkLevel == 2 && Health >= 250 && Level >= 10 && NumEatenPrey >= 30 && (SCVSet.DA05.IsCompleted() || SCVSet.C03.IsCompleted()) ;Complete (or fail) Quest Ill Met By Moonlight || The Silver Hand
       Return True
     ElseIf aiPerkLevel == 3 && Health >= 350 && Level >= 30 && NumEatenPrey >= 100 && JMap.getInt(TargetData, "SCV_ImportantNPCsEaten") >= 10
       Return True

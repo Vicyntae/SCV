@@ -41,13 +41,13 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Int Level = akTarget.GetLevel()
     If aiPerkLevel == 1 && Speech >= 25 && Level >= 20 && PlayerRef.hasPerk(Haggling20)
       Return True
-    ElseIf aiPerkLevel == 2 && Speech >= 40 && Level >= 35 && MS05.GetStage() >= 300
+    ElseIf aiPerkLevel == 2 && Speech >= 40 && Level >= 35 && MS05.IsCompleted()
       Return True
-    ElseIf aiPerkLevel == 3 && Speech >= 55 && Level >= 50 && DA02.GetStage() >= 50
+    ElseIf aiPerkLevel == 3 && Speech >= 55 && Level >= 50 && DA02.IsCompleted()
       Return True
     ElseIf aiPerkLevel == 4 && Speech >= 70 && Level >= 60 && PlayerRef.HasPerk(Intimidation)
       Return True
-    ElseIf aiPerkLevel == 5 && Speech >= 90 && Level >= 70 && TGLeadership.GetStage() >= 200
+    ElseIf aiPerkLevel == 5 && Speech >= 90 && Level >= 70 && TGLeadership.IsCompleted()
       Return True
     EndIf
   EndIf

@@ -29,11 +29,11 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Float Conjure = akTarget.GetActorValue("Conjuration")
     Int Level = akTarget.GetLevel()
     Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumDaedraEaten")
-    If aiPerkLevel == 1 && Conjure >= 25 && Level >= 10 && (SCVSet.DA01.GetStage() == 100 || SCVSet.DA01.GetStage() == 110 || SCVSet.DA01.GetStage() == 250);Complete The Black Star
+    If aiPerkLevel == 1 && Conjure >= 25 && Level >= 10 && (SCVSet.DA01.IsCompleted());Complete The Black Star
       Return True
-    ElseIf aiPerkLevel == 2 && Conjure >= 40 && Level >= 20 && NumEatenPrey >= 20 && (SCVSet.DA10.GetStage() == 200 || SCVSet.DA10.GetStage() == 500 || SCVSet.DA10.GetStage() == 550);Complete The House of Horrors
+    ElseIf aiPerkLevel == 2 && Conjure >= 40 && Level >= 20 && NumEatenPrey >= 20 && (SCVSet.DA10.IsCompleted());Complete The House of Horrors
       Return True
-    ElseIf aiPerkLevel == 3 && Conjure >= 60 && Level >= 30 && NumEatenPrey >= 50 && (SCVSet.DA07.GetStage() == 100 || SCVSet.DA07.GetStage() == 150 || SCVSet.DA07.GetStage() == 200) ;Complete Pieces of the Past
+    ElseIf aiPerkLevel == 3 && Conjure >= 60 && Level >= 30 && NumEatenPrey >= 50 && (SCVSet.DA07.IsCompleted()) ;Complete Pieces of the Past
       Return True
     EndIf
   EndIf

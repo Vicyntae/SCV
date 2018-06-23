@@ -32,9 +32,9 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumDwarvenEaten")
     If aiPerkLevel == 1 && DigestRate >= 2 && Level >= 15 && PlayerRef.HasSpell(SCVSet.MS04Reward) ;Complete quest Unfathomable Depths
       Return True
-    ElseIf aiPerkLevel == 2 && DigestRate >= 5 && Level >= 25 && NumEatenPrey >= 30 && SCVSet.MG06.GetStage() == 200 ;Complete Quest Revealing the Unseen
+    ElseIf aiPerkLevel == 2 && DigestRate >= 5 && Level >= 25 && NumEatenPrey >= 30 && SCVSet.MG06.IsCompleted() ;Complete Quest Revealing the Unseen
       Return True
-    ElseIf aiPerkLevel == 3 && DigestRate >= 8 && Level >= 30 && NumEatenPrey >= 60 && (SCVSet.DA04.GetStage() == 100 || SCVSet.DA04.GetStage() == 105)  ;Complete (or fail) Quest Discerning the Transmundane
+    ElseIf aiPerkLevel == 3 && DigestRate >= 8 && Level >= 30 && NumEatenPrey >= 60 && (SCVSet.DA04.IsCompleted())  ;Complete (or fail) Quest Discerning the Transmundane
       Return True
     EndIf
   EndIf

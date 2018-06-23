@@ -30,11 +30,11 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Float Magicka = akTarget.GetBaseActorValue("Magicka")
     Int Level = akTarget.GetLevel()
     Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumGhostsEaten")
-    If aiPerkLevel == 1 && Magicka >= 150 && Level >= 5 && SCVSet.FreeformIvarstead01.GetStage() == 200 ;Complete Quest Lifting the Shroud.
+    If aiPerkLevel == 1 && Magicka >= 150 && Level >= 5 && SCVSet.FreeformIvarstead01.IsCompleted() ;Complete Quest Lifting the Shroud.
       Return True
-    ElseIf aiPerkLevel == 2 && Magicka >= 200 && Level >= 10 && NumEatenPrey >= 5 && SCVSet.MG07.GetStage() == 200 ;Complete The Staff of Magnus
+    ElseIf aiPerkLevel == 2 && Magicka >= 200 && Level >= 10 && NumEatenPrey >= 5 && SCVSet.MG07.IsCompleted() ;Complete The Staff of Magnus
       Return True
-    ElseIf aiPerkLevel == 3 && Magicka >= 300 && Level >= 15 && NumEatenPrey >= 15 && SCVSet.MS06.GetStage() == 250  ;Complete The Wolf Queen Awakened.
+    ElseIf aiPerkLevel == 3 && Magicka >= 300 && Level >= 15 && NumEatenPrey >= 15 && SCVSet.MS06.IsCompleted()  ;Complete The Wolf Queen Awakened.
       Return True
     EndIf
   EndIf

@@ -29,9 +29,9 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
   Float Energy = akTarget.GetBaseActorValue("Stamina") + akTarget.GetBaseActorValue("Magicka")
   If aiPerkLevel == 1 && Energy >= 250 && Resist >= 20
     Return True
-  ElseIf aiPerkLevel == 1 && Energy >= 350 && Resist >= 40 && (SCVSet.MS02.GetStage() == 100 || SCVSet.MS02.GetStage() == 250)  ;Complete No One Escapes Cidhna Mine
+  ElseIf aiPerkLevel == 1 && Energy >= 350 && Resist >= 40 && (SCVSet.MS02.IsCompleted())  ;Complete No One Escapes Cidhna Mine
     Return True
-  ElseIf aiPerkLevel == 3 && Energy >= 700 && Resist >= 60 && SCVSet.MS07.GetStage() == 250 ;Complete Lights Out!
+  ElseIf aiPerkLevel == 3 && Energy >= 700 && Resist >= 60 && SCVSet.MS07.IsCompleted() ;Complete Lights Out!
     Return True
   EndIf
 EndFunction

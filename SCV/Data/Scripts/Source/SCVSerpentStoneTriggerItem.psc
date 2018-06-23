@@ -1,6 +1,8 @@
 ScriptName SCVSerpentStoneTriggerItem Extends ObjectReference
 Actor Property PlayerRef Auto
 SCVLibrary Property SCVLib Auto
+Quest Property SCV_Quest_FindSerpentWisp Auto
+GlobalVariable Property SCV_EnableWisps Auto
 
 Event OnActivate(ObjectReference akActionRef)
   If akActionRef == PlayerRef
@@ -16,6 +18,7 @@ Event OnActivate(ObjectReference akActionRef)
       JMap.setInt(PlayerData, "SCV_IsOVPred", 1)
       SCVLib.checkPredAbilities(PlayerRef)
       Debug.MessageBox("You feel the power of the serpent flow through you, along with a sudden hunger...")
+      SCV_Quest_FindSerpentWisp.CompleteQuest()
     EndIf
   EndIf
 EndEvent

@@ -30,9 +30,9 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Float Stamina = akTarget.GetBaseActorValue("Stamina")
     Int Level = akTarget.GetLevel()
     Int NumEatenPrey = JMap.getInt(TargetData, "SCV_NumUndeadEaten")
-    If aiPerkLevel == 1 && Stamina >= 150 && Level >= 5 && SCVSet.dunAnsilvundQST.GetStage() == 100 ;Complete Ansilvund
+    If aiPerkLevel == 1 && Stamina >= 150 && Level >= 5 && SCVSet.dunAnsilvundQST.IsCompleted() ;Complete Ansilvund
       Return True
-    ElseIf aiPerkLevel == 2 && Stamina >= 200 && Level >= 10 && NumEatenPrey >= 25 && SCVSet.dunGualdursonQST.GetStage() == 225 ;Complete Forbidden Legend
+    ElseIf aiPerkLevel == 2 && Stamina >= 200 && Level >= 10 && NumEatenPrey >= 25 && SCVSet.dunGualdursonQST.IsCompleted() ;Complete Forbidden Legend
       Return True
     ElseIf aiPerkLevel == 3 && Stamina >= 300 && Level >= 15 && NumEatenPrey >= 15 && PlayerRef.HasMagicEffect(SCVSet.EnchDragonPriestUltraMaskEffect)  ;Obtain Konahrik
       Return True

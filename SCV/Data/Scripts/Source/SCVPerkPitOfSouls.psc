@@ -32,9 +32,9 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
   Int NumSoulsCaptured = JMap.getInt(TargetData, "SCV_SoulsCaptured")
   If aiPerkLevel == 1 && Enchant >= 30 && SpiritLevel >= 1 && Level >= 15 && PlayerRef.hasPerk(SCVSet.SoulSqueezer)
     Return True
-  ElseIf aiPerkLevel == 2 && Enchant >= 55 && SpiritLevel >= 2 && Level >= 30 && NumSoulsCaptured >= 30 && SCVSet.MGRArniel04.GetStage() == 200 ;Complete Arniel's Endeavor
+  ElseIf aiPerkLevel == 2 && Enchant >= 55 && SpiritLevel >= 2 && Level >= 30 && NumSoulsCaptured >= 30 && SCVSet.MGRArniel04.IsCompleted() ;Complete Arniel's Endeavor
     Return True
-  ElseIf aiPerkLevel == 3 && Enchant >= 90 && Level >= 50 && NumSoulsCaptured >= 70 && SCVSet.MGRitual03.GetStage() == 200  ;Complete Conjuration Ritual Spell
+  ElseIf aiPerkLevel == 3 && Enchant >= 90 && Level >= 50 && NumSoulsCaptured >= 70 && SCVSet.MGRitual03.IsCompleted()  ;Complete Conjuration Ritual Spell
     Return True
   EndIf
 EndFunction

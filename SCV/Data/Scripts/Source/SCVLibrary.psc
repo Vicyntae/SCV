@@ -1466,12 +1466,7 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
         Else
           PlayerThoughtDB(nextPred, "SCVAVPredStruggleFinished")
         EndIf
-      ;/ElseIf StoredType == 5 || StoredType == 7
-        If !hasPVStrugglePrey(PlayerRef)
-          PlayerThoughtDB(nextPred, "SCVPVPredAllStruggleFinished")
-        Else
-          PlayerThoughtDB(nextPred, "SCVPVPredStruggleFinished")
-        EndIf/;
+
       EndIf
     EndIf
 
@@ -1496,6 +1491,11 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
     Else
       addItem(nextPred, akTarget, aiItemType = iModType, afDigestValueOverRide = DigestValue)
     EndIf
+    Int NumItems = Math.Floor(DigestValue / 5)
+    While NumItems
+      nextPred.EquipItem(SCLSet.SCL_DummyNotFoodLarge)
+      NumItems -= 1
+    EndWhile
     JMap.setInt(nextPredData, "SCV_NumPreyEaten", JMap.getInt(nextPredData, "SCV_NumPreyEaten") + 1)
     If StoredType == 1 || StoredType == 2
       JMap.setInt(nextPredData, "SCV_NumOVPreyEaten", JMap.getInt(nextPredData, "SCV_NumOVPreyEaten") + 1)
@@ -1573,9 +1573,10 @@ Function handleFinishedActor(Actor akTarget, Int aiPreyEntry = 0, Int aiTargetDa
     Notice("No Pred detected. Removing all prey.")
     If hasOVStrugglePrey(akTarget, TargetData)
       vomitAll(akTarget, RemoveEverything = True)
+      ;vomitAllOralStrugglePrey(akTarget)
     EndIf
     If hasAVStrugglePrey(akTarget, TargetData)
-      WF_SolidRemove(akTarget)
+      WF_SolidRemoveAll(akTarget)
     EndIf
   EndIf
   quickUpdate(akTarget, True)

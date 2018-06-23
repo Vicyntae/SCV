@@ -142,6 +142,11 @@ Int Property AVDestinationChoice
   EndFunction
 EndProperty
 
+GlobalVariable Property SCV_dunDA14PortalEnabledVar Auto ;Open portal to Misty Grove for anal vore wisp.
+Quest Property SCV_Quest_FindSerpentWisp Auto
+Quest Property SCV_Quest_FindMistyWisp Auto
+GlobalVariable Property SCV_EnableWisps Auto
+
 Spell Property SCV_SwallowLethal Auto
 Spell Property SCV_SwallowNonLethal Auto
 Spell Property SCV_TakeInLethal Auto
@@ -228,6 +233,10 @@ LeveledItem Property SCV_LeveledDaedraItems Auto
 LeveledItem Property SCV_LeveledBossItems Auto
 
 Formlist Property SCV_InVoreActionList Auto ; Prevents any vore actions if they are already in one
+Formlist Property SCV_VIPreyList Auto
+FormList Property SCV_EssentialTrackingList Auto
+ObjectReference Property SCV_EssentialTrackerCellMarker Auto
+
 Faction Property SCV_FACT_OVPredBlocked Auto
 Faction Property SCV_FACT_AVPredBlocked Auto
 Faction Property SCV_FACT_PreyProtected Auto

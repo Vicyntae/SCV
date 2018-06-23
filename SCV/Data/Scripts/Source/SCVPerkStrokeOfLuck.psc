@@ -31,7 +31,7 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Return True
   ElseIf aiPerkLevel == 2 && JMap.getInt(TargetData, "SCV_StrokeOfLuckActivate") >= 5 && Lockpicking >= 55 && PlayerRef.HasPerk(SCVSet.GoldenTouch)
     Return True
-  ElseIf aiPerkLevel == 3 && JMap.getInt(TargetData, "SCV_StrokeOfLuckActivate") >= 20 && Lockpicking >= 80 && SCVSet.TG09.GetStage() == 200  ;Complete Darkness Returns
+  ElseIf aiPerkLevel == 3 && JMap.getInt(TargetData, "SCV_StrokeOfLuckActivate") >= 20 && Lockpicking >= 80 && SCVSet.TG09.IsCompleted()  ;Complete Darkness Returns
     Return True
   EndIf
 EndFunction

@@ -26,11 +26,11 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
   EndIf
   Int ArmorLevel = akTarget.GetActorValue("LightArmor") as Int
   Int Magicka = akTarget.GetActorValue("Magicka") as Int
-  If aiPerkLevel == 1 && ArmorLevel >= 20 && Magicka >= 200 && SCVSet.MS14Quest.GetStage() == 200  ;Complete Laid to Rest
+  If aiPerkLevel == 1 && ArmorLevel >= 20 && Magicka >= 200 && SCVSet.MS14Quest.IsCompleted()  ;Complete Laid to Rest
     Return True
-  ElseIf aiPerkLevel == 2 && ArmorLevel >= 40 && Magicka >= 300 && SCVSet.Favor109.GetStage() == 20  ;Complete Kill the Vampire
+  ElseIf aiPerkLevel == 2 && ArmorLevel >= 40 && Magicka >= 300 && SCVSet.Favor109.IsCompleted()  ;Complete Kill the Vampire
     Return True
-  ElseIf aiPerkLevel == 3 && ArmorLevel >= 60 && Magicka >= 400 && SCVSet.FreeformFalkreathQuest03B.GetStage() == 200  ;Complete Dark Ancestor
+  ElseIf aiPerkLevel == 3 && ArmorLevel >= 60 && Magicka >= 400 && SCVSet.FreeformFalkreathQuest03B.IsCompleted()  ;Complete Dark Ancestor
     Return True
   EndIf
 EndFunction

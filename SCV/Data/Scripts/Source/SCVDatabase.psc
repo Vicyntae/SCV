@@ -11,6 +11,24 @@ EndFunction
 Function setupItemTypes()
   Parent.setupItemTypes()
   SCLibrary.addItemType(8, "Struggling", "Currently struggling prey.", "StrugglingFullness", True)
+
+  SCX_BaseItemArchetypes SType = SCLibrary.getSCX_BaseAlias(SCLSet.JM_BaseArchetypes, "Stomach") as SCX_BaseItemArchetypes
+  If !SType
+    While !SType
+      Utility.Wait(0.5)
+      SType = SCLibrary.getSCX_BaseAlias(SCLSet.JM_BaseArchetypes, "Stomach") as SCX_BaseItemArchetypes
+    EndWhile
+  EndIf
+  SType.ItemStoredTypes = PapyrusUtil.PushInt(SType.ItemStoredTypes, 8)
+
+  SCX_BaseItemArchetypes CType = SCLibrary.getSCX_BaseAlias(SCLSet.JM_BaseArchetypes, "Colon") as SCX_BaseItemArchetypes
+  If !CType
+    While !CType
+      Utility.Wait(0.5)
+      CType = SCLibrary.getSCX_BaseAlias(SCLSet.JM_BaseArchetypes, "Colon") as SCX_BaseItemArchetypes
+    EndWhile
+  EndIf
+  CType.ItemStoredTypes = PapyrusUtil.PushInt(CType.ItemStoredTypes, 8)
 EndFunction
 
 Function setupAggregateValues()

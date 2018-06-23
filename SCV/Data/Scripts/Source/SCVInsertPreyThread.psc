@@ -104,7 +104,7 @@ Event OnInsertPreyCall(Int aiID)
 
     Float DigestValue = SCVLib.genDigestValue(Prey, True)
     If Prey.isDead() || Friendly || Prey.IsUnconscious()
-      ;Notice("Prey is willing or incapacitated. Inserting directly into contents.")
+      Notice("Prey is willing or incapacitated. Inserting directly into contents.")
       If Prey == PlayerRef
         JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType, afDigestValueOverRide = DigestValue, abMoveNow = False)
         SCVSet.SCV_FollowPred.ForceRefTo(Pred)
@@ -112,7 +112,7 @@ Event OnInsertPreyCall(Int aiID)
         JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = iModType, afDigestValueOverRide = DigestValue)
       EndIf
     Else
-      ;Notice("Prey is struggling. Inserting into struggle contents")
+      Notice("Prey is struggling. Inserting into struggle contents")
       ;If AnimRecall > 0
       If Pred.IsInFaction(SCVSet.SCV_FACT_Animated) || Prey.IsInFaction(SCVSet.SCV_FACT_Animated)
         JM_PreyEntry = SCVLib.addItem(Pred, Prey, aiItemType = 8, afDigestValueOverRide = DigestValue, abMoveNow = False)

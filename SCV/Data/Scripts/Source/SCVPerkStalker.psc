@@ -30,9 +30,9 @@ Bool Function canTake(Actor akTarget, Int aiPerkLevel, Bool abOverride, Int aiTa
     Int Level = akTarget.GetLevel()
     If aiPerkLevel == 1 && PlayerRef.HasPerk(SCVSet.QuietCasting) && Sneak >= 25 && Level >= 10
       Return True
-    ElseIf aiPerkLevel == 2 && Sneak >= 50 && Level >= 25 && SCVSet.TG08A.GetStage() == 200 ;Complete Trinity Restored
+    ElseIf aiPerkLevel == 2 && Sneak >= 50 && Level >= 25 && SCVSet.TG08A.IsCompleted() ;Complete Trinity Restored
       Return True
-    ElseIf aiPerkLevel == 3 && Sneak >= 75 && Level >= 35 && SCVSet.DB11.GetStage() == 200 ;Complete Hail Sithis!
+    ElseIf aiPerkLevel == 3 && Sneak >= 75 && Level >= 35 && SCVSet.DB11.IsCompleted() ;Complete Hail Sithis!
       Return True
     EndIf
   EndIf
