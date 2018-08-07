@@ -1183,7 +1183,7 @@ Float Function genDigestValue(Form akItem, Bool abMod1 = False, Bool abMod2 = Fa
   			DigestValue = JMap.getFlt(JM_DB_ItemEntry, "WeightOverride")
   			DigestValue *= akTarget.GetScale()
   		Else
-  			DigestValue = Utility.RandomInt(10, 50)
+        DigestValue = akTarget.GetBaseActorValue("Health")
   		EndIf
   		If JM_DB_ItemEntry && JMap.hasKey(JM_DB_ItemEntry, "WeightModifier")
   			DigestValue *= JMap.getFlt(JM_DB_ItemEntry, "WeightModifier", 1)
